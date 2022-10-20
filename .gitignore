@@ -1,0 +1,33 @@
+# Java gitignore
+
+.gradle/
+.metadata
+
+#Ignore all bin folders
+bin/
+target/
+generated/
+
+#Ignore all .settings folders
+*/.settings/
+
+#Ignore vi temporary files
+*~
+*.orig
+*.patch
+class/
+*.class
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# VS Code gitignore
+out
+dist
+lib
+src-gen
+node_modules
+.vscode-test/
+*.vsix
+plugins
+gen-webpack.config.js

@@ -1,0 +1,53 @@
+index: target/index.xml;name="equinox-app"
+
+-jpms-module-info: \
+    ${project.groupId}.equinox.${project.artifactId};\
+        version=${project.version};\
+        ee=JavaSE-${java.specification.version}
+-jpms-module-info-options: jdk.unsupported;static=false
+
+-standalone: ${index}
+
+-runfw: org.eclipse.osgi
+-runee: JavaSE-17
+-runsystemcapabilities: ${native_capability}
+
+-resolve.effective: resolve, active
+
+-runproperties: \
+    org.osgi.framework.startlevel.beginning=1,\
+	osgi.console=,\
+	osgi.console.enable.builtin=false,\
+	gosh.args=--nointeractive -c telnetd -i 0.0.0.0 -p 11311 start,\
+	gosh.home=.
+    
+-runstartlevel: \
+    order = sortbynameversion, \
+    begin = -1
+    
+-runrequires: \
+	osgi.identity;filter:='(osgi.identity=org.fipro.service.impl)',\
+	bnd.identity;id='org.fipro.service.eventhandler',\
+	bnd.identity;id='org.fipro.service.configurable',\
+	bnd.identity;id='org.fipro.service.command',\
+	bnd.identity;id='zorg.fipro.osgi.benchmark',\
+    bnd.identity;id='org.apache.felix.gogo.command',\
+    bnd.identity;id='org.apache.felix.gogo.shell'
+-runvm: -Dgosh.args=--nointeractive -c telnetd -i 0.0.0.0 -p 11311 start
+
+-runbundles: \
+	org.apache.felix.configadmin;version='[1.9.24,1.9.25)',\
+	org.apache.felix.gogo.command;version='[1.1.2,1.1.3)',\
+	org.apache.felix.gogo.runtime;version='[1.1.6,1.1.7)',\
+	org.apache.felix.gogo.shell;version='[1.1.4,1.1.5)',\
+	org.apache.felix.scr;version='[2.2.0,2.2.1)',\
+	org.eclipse.equinox.event;version='[1.6.100,1.6.101)',\
+	org.fipro.service.api;version='[1.0.0,1.0.1)',\
+	org.fipro.service.command;version='[1.0.0,1.0.1)',\
+	org.fipro.service.configurable;version='[1.0.0,1.0.1)',\
+	org.fipro.service.eventhandler;version='[1.0.0,1.0.1)',\
+	org.fipro.service.impl;version='[1.0.0,1.0.1)',\
+	org.osgi.service.event;version='[1.4.1,1.4.2)',\
+	org.osgi.util.function;version='[1.2.0,1.2.1)',\
+	org.osgi.util.promise;version='[1.2.0,1.2.1)',\
+	zorg.fipro.osgi.benchmark;version='[1.0.0,1.0.1)'

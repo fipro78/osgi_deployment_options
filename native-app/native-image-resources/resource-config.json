@@ -1,0 +1,15 @@
+{
+  "resources":{
+  "includes":[
+    {
+      "pattern":"META-INF/services/.*$"
+    }, 
+    {
+      "pattern":"org/eclipse/equinox/internal/event/ExternalMessages.properties"
+    },
+    {
+      "pattern":"org/eclipse/osgi/internal/url/SetAccessible.bytes"
+    }
+  ]},
+  "bundles":[]
+}

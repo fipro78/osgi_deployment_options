@@ -1,0 +1,179 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.fipro.service</groupId>
+    <artifactId>service-application</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>native-app</artifactId>
+
+  <dependencies>
+
+    <!-- The OSGi framework is Equinox -->
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.osgi</artifactId>
+    </dependency>
+
+    <!-- Declarative Services -->
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.scr</artifactId>
+    </dependency>
+
+    <!-- Configuration Admin -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.cm</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.configadmin</artifactId>
+    </dependency>
+
+    <!-- Event Admin -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.event</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.equinox.event</artifactId>
+    </dependency>
+
+    <!--  OSGi Function  -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.util.function</artifactId>
+    </dependency>
+    <!--  OSGi Promise  -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.util.promise</artifactId>
+    </dependency>
+
+    <!-- The Gogo Shell -->
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.gogo.command</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.gogo.runtime</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.gogo.shell</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Application Bundles -->
+    <dependency>
+      <groupId>org.fipro.service</groupId>
+      <artifactId>api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.fipro.service</groupId>
+      <artifactId>impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.fipro.service</groupId>
+      <artifactId>command</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.fipro.service</groupId>
+      <artifactId>configurable</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.fipro.service</groupId>
+      <artifactId>eventhandler</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>zorg.fipro.osgi</groupId>
+      <artifactId>benchmark</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Atomos -->
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.atomos</artifactId>
+      <version>1.0.0</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix.atomos</groupId>
+      <artifactId>osgi.core</artifactId>
+      <classifier>AtomosEquinox</classifier>
+      <version>8.0.0</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+
+  <build>
+    <plugins>
+      <!-- export OSGi application in folder structure -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <!-- load the dependencies -->
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/atomos_lib</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>0.9.12</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>build-native</id>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <imageName>atomos</imageName>
+                    <mainClass>org.apache.felix.atomos.Atomos</mainClass>
+                    <buildArgs>
+                        --no-server
+                        --no-fallback
+                        --initialize-at-build-time=org.apache.felix.atomos
+                        --initialize-at-build-time=javax.servlet
+                        --initialize-at-build-time=org.apache.felix.service.command.Converter
+                        -H:ConfigurationFileDirectories=${project.basedir}/native-image-resources
+                        -H:+ReportUnsupportedElementsAtRuntime
+                        -H:+ReportExceptionStackTraces
+                        -H:+PrintClassInitialization
+                    </buildArgs>
+                </configuration>
+            </plugin>
+    </plugins>
+  </build>
+
+</project>

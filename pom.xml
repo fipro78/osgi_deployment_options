@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.fipro.service</groupId>
+  <artifactId>service-application</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <properties>
+    <java.version>11</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <bnd.version>6.3.1</bnd.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>bnd-release</id>
+      <name>Bndtools</name>
+      <url>https://bndtools.jfrog.io/bndtools/libs-release/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>OSGi</id>
+      <name>OSGi public binaries</name>
+      <url>https://oss.sonatype.org/content/groups/osgi</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>Apache Snapshots</id>
+      <url>https://repository.apache.org/content/groups/snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>bnd-release</id>
+      <name>Bndtools</name>
+      <url>https://bndtools.jfrog.io/bndtools/libs-release/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>osgi.core</artifactId>
+        <version>8.0.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>osgi.annotation</artifactId>
+        <version>8.1.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.service.component.annotations</artifactId>
+        <version>1.5.0</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!--  The OSGi framework RI is Equinox  -->
+      <dependency>
+        <groupId>org.eclipse.platform</groupId>
+        <artifactId>org.eclipse.osgi</artifactId>
+        <version>3.17.200</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!--  Declarative Services  -->
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.scr</artifactId>
+        <version>2.2.0</version>
+        <scope>runtime</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>animal-sniffer-annotations</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!--  Configuration Admin  -->
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.service.cm</artifactId>
+        <version>1.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.configadmin</artifactId>
+        <version>1.9.24</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!--  Metatype  -->
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.service.metatype</artifactId>
+        <version>1.4.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.platform</groupId>
+        <artifactId>org.eclipse.equinox.metatype</artifactId>
+        <version>1.6.100</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!--  Event Admin  -->
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.service.event</artifactId>
+        <version>1.4.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.platform</groupId>
+        <artifactId>org.eclipse.equinox.event</artifactId>
+        <version>1.6.100</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!--  Log Stream Service  -->
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.service.log</artifactId>
+        <version>1.5.0</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.platform</groupId>
+        <artifactId>org.eclipse.equinox.log.stream</artifactId>
+        <version>1.0.400</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!--  Http Whiteboard  -->
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.service.http.whiteboard</artifactId>
+        <version>1.1.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.http.jetty</artifactId>
+        <version>4.2.0</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!--  Http Servlet 3.1 API with contract  -->
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.http.servlet-api</artifactId>
+        <version>1.2.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-servlet-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!--  JAX-RS Whiteboard  -->
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.service.jaxrs</artifactId>
+        <version>1.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.aries.jax.rs</groupId>
+        <artifactId>org.apache.aries.jax.rs.whiteboard</artifactId>
+        <version>2.0.1</version>
+      </dependency>
+
+      <!--  JAX-RS 2.1 API with contract  -->
+      <dependency>
+        <groupId>org.apache.aries.spec</groupId>
+        <artifactId>org.apache.aries.javax.jax.rs-api</artifactId>
+        <version>1.0.4</version>
+      </dependency>
+
+      <!--  JAX-RS Jackson  -->
+      <dependency>
+        <groupId>org.apache.aries.jax.rs</groupId>
+        <artifactId>org.apache.aries.jax.rs.jackson</artifactId>
+        <version>2.0.1</version>
+      </dependency>
+
+      <!-- Java 11 XML -->
+      <dependency>
+        <groupId>com.sun.activation</groupId>
+        <artifactId>jakarta.activation</artifactId>
+        <version>1.2.2</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-osgi</artifactId>
+        <version>2.3.3</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>2.3.3</version>
+        <scope>runtime</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.xml.ws</groupId>
+        <artifactId>jakarta.xml.ws-api</artifactId>
+        <version>2.3.3</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-json_1.1_spec</artifactId>
+        <version>1.5</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jaxrs_2.1_spec</artifactId>
+        <version>1.1</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!--  OSGi Function  -->
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.util.function</artifactId>
+        <version>1.2.0</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!--  OSGi Promise  -->
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.util.promise</artifactId>
+        <version>1.2.0</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!--  OSGi PushStream  -->
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.util.pushstream</artifactId>
+        <version>1.0.2</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!--  OSGi Converter  -->
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.util.converter</artifactId>
+        <version>1.0.9</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!--  OSGi Configurator  -->
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.service.configurator</artifactId>
+        <version>1.0.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.configurator</artifactId>
+        <version>1.0.6</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!--  Several implementations need to log using SLF4J  -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.7.36</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.2.11</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>1.2.11</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!--  The Web Console  -->
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.webconsole</artifactId>
+        <version>4.8.2</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.webconsole.plugins.ds</artifactId>
+        <version>2.1.0</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.inventory</artifactId>
+        <version>1.1.0</version>
+        <scope>test</scope>
+      </dependency>
+
+      <!--  The Gogo Shell  -->
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.gogo.shell</artifactId>
+        <version>1.1.4</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.gogo.runtime</artifactId>
+        <version>1.1.6</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.gogo.command</artifactId>
+        <version>1.1.2</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.10.1</version>
+          <configuration>
+            <release>${java.version}</release>
+          </configuration>
+        </plugin>
+
+        <!-- Use the bnd-maven-plugin and assemble the symbolic names -->
+        <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-maven-plugin</artifactId>
+          <version>${bnd.version}</version>
+          <configuration>
+            <bnd>
+              <![CDATA[
+Bundle-SymbolicName: ${project.groupId}.${project.artifactId}
+-sources: true
+-contract: *
+-jpms-module-info:
+]]>
+            </bnd>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>bnd-process</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- Required to make the maven-jar-plugin pick up the bnd 
+                    generated manifest. Also avoid packaging empty Jars -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.2.0</version>
+          <configuration>
+            <archive>
+              <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+            </archive>
+            <skipIfEmpty>true</skipIfEmpty>
+          </configuration>
+        </plugin>
+        <!-- Setup the indexer for running and testing -->
+        <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-indexer-maven-plugin</artifactId>
+          <version>${bnd.version}</version>
+          <configuration>
+            <localURLs>REQUIRED</localURLs>
+            <attach>false</attach>
+          </configuration>
+          <executions>
+            <execution>
+              <id>index</id>
+              <goals>
+                <goal>index</goal>
+              </goals>
+              <configuration>
+                <indexName>${project.artifactId}</indexName>
+              </configuration>
+            </execution>
+            <execution>
+              <id>test-index</id>
+              <goals>
+                <goal>index</goal>
+              </goals>
+              <configuration>
+                <indexName>${project.artifactId} Test</indexName>
+                <outputFile>${project.build.directory}/test-index.xml</outputFile>
+                <scopes>
+                  <scope>test</scope>
+                </scopes>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- Define the version of the resolver plugin we use -->
+        <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-resolver-maven-plugin</artifactId>
+          <version>${bnd.version}</version>
+          <configuration>
+            <failOnChanges>false</failOnChanges>
+            <bndruns></bndruns>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>resolve</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- Define the version of the export plugin we use -->
+        <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-export-maven-plugin</artifactId>
+          <version>${bnd.version}</version>
+          <configuration>
+            <resolve>true</resolve>
+            <failOnChanges>false</failOnChanges>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>export</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- Define the version of the testing plugin that we use -->
+        <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-testing-maven-plugin</artifactId>
+          <version>${bnd.version}</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>testing</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- Define the version of the baseline plugin we use and 
+                    avoid failing when no baseline jar exists. (for example before the first 
+                    release) -->
+        <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-baseline-maven-plugin</artifactId>
+          <version>${bnd.version}</version>
+          <configuration>
+            <failOnMissing>false</failOnMissing>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>baseline</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        
+        <!-- docker-maven-plugin -->
+        <!-- 
+          https://github.com/fabric8io/docker-maven-plugin
+          http://dmp.fabric8.io/
+        -->
+        <plugin>
+          <groupId>io.fabric8</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>0.40.2</version>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>build_only</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>org.fipro.service.api</module>
+        <module>org.fipro.service.impl</module>
+        <module>org.fipro.service.eventhandler</module>
+        <module>org.fipro.service.configurable</module>
+        <module>org.fipro.service.command</module>
+        <module>org.fipro.osgi.benchmark</module>
+        <module>org.fipro.service.app</module>
+        <!-- <module>native-app</module> -->
+      </modules>
+    </profile>
+    <profile>
+      <id>benchmark</id>
+      <activation>
+        <property>
+          <name>docker.keepRunning</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <modules>
+        <module>org.fipro.service.api</module>
+        <module>org.fipro.service.impl</module>
+        <module>org.fipro.service.eventhandler</module>
+        <module>org.fipro.service.configurable</module>
+        <module>org.fipro.service.command</module>
+        <module>org.fipro.osgi.benchmark</module>
+        <module>org.fipro.service.app</module>
+        <!-- <module>native-app</module> -->
+        <module>org.fipro.osgi.benchmark.service</module>
+        <module>org.fipro.osgi.benchmark.app</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>kill</id>
+      <modules>
+        <module>org.fipro.osgi.benchmark.service</module>
+        <module>org.fipro.osgi.benchmark.app</module>
+      </modules>
+    </profile>
+
+  </profiles>
+</project>

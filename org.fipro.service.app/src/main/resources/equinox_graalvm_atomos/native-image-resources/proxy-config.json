@@ -1,0 +1,12 @@
+[
+  {
+    "interfaces": [
+      "org.apache.felix.service.command.Converter"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.osgi.service.cm.SynchronousConfigurationListener"
+    ]
+  }
+]

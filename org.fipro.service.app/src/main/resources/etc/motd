@@ -1,0 +1,17 @@
+===========================================
+Welcome to the OSGi Test app via Gogo Shell
+===========================================
+
+It has four commands:
+
+1. configure <param>
+Uses the ConfigAdmin to set the given param as value for the "welcome" command.
+
+2. welcome
+Print out a message that contains the value that was set via the "configure" command.
+
+3. consume <param>
+Sends an event via EventAdmin to pass the value of the given param. The triggered EventHandler will simply print out a message that contains the value.
+
+4. modify <param>
+Triggers a StringModifier service and prints out the result.

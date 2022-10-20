@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.fipro.service</groupId>
+    <artifactId>service-application</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>command</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.annotation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.component.annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.cm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.event</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.fipro.service</groupId>
+      <artifactId>api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.fipro.service</groupId>
+      <artifactId>configurable</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>biz.aQute.bnd</groupId>
+        <artifactId>bnd-maven-plugin</artifactId>
+          <configuration>
+            <bnd>
+              <![CDATA[
+Bundle-SymbolicName: ${project.groupId}.${project.artifactId}
+-sources: true
+-contract: *
+-jpms-module-info:org.fipro.service.command;modules='org.apache.felix.configadmin'
+-jpms-module-info-options: org.osgi.service.cm;ignore="true"
+]]>
+<!-- automatic jpms generation would include org.osgi.service.cm, but this needs to be replaced with org.apache.felix.configadmin as this bundle also exports org.osgi.service.cm -->
+            </bnd>
+          </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
