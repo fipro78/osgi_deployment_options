@@ -609,23 +609,37 @@ The following tables show the results for the created image sizes and the averag
 | jlink-atomos-app:17_temurin            | \~  75 MB  |            \~  78 MB |    \~ 1439 ms |    \~ 1326 ms |
 | jlink-atomos-compressed-app:17_temurin | \~  53 MB  |            \~  55 MB |    \~ 1593 ms |    \~ 1445 ms |
 
+### Eclipse Temurin 11
+
+| Deployment (plain OSGi)         | Benchmark Image Size | Startup clean | Startup cache |
+| :---                            |                  ---:|           ---:|           ---:|
+| folder-app:17_temurin           |            \~ 161 MB |    \~ 1146 ms |     \~ 1077 ms |
+| executable-app:17_temurin       |            \~ 164 MB |    \~ 1229 ms |    \~ 1290 ms |
+| jlink-app:17_temurin            |            \~  76 MB |    \~ 1426 ms |    \~ 1417 ms |
+| jlink-compressed-app:17_temurin |            \~  54 MB |    \~ 1502 ms |    \~ 1541 ms |
+
+
+| Deployment (OSGi Connect)       | Benchmark Image Size | Startup clean | Startup cache |
+| :---                            |                  ---:|           ---:|           ---:|
+| folder-atomos-app:17_temurin<br>classpath<br>modulepath           |            \~ 161 MB |     <br>\~ 1317 ms<br>\~ 1363 ms |     <br>\~ 1154 ms<br>\~ 1219 ms |
+| jlink-atomos-app:17_temurin            |            \~  76 MB |    \~ 1534 ms |    \~ 1408 ms |
+| jlink-atomos-compressed-app:17_temurin |            \~  54 MB |    \~ 1605 ms |    \~ 1504 ms |
+
 ### IBM Semeru 17
 
 | Deployment (plain OSGi)        | Benchmark Image Size | Startup clean | Startup cache |
 | :---                           |                  ---:|           ---:|           ---:|
-| folder-app:17_openj9           |            \~ 276 MB |     \~ 1017 ms |     \~ 917 ms |
-| executable-app:17_openj9       |            \~ 278 MB |    \~ 1069 ms |    \~ 1093 ms |
-| jlink-app:17_openj9            |            \~ 163 MB |    \~ 2442 ms |    \~ 2461 ms |
-| jlink-compressed-app:17_openj9 |            \~ 140 MB |    \~ 2550 ms |    \~ 2645 ms |
+| folder-app:17_openj9           |            \~ 276 MB |     \~ 954 ms |     \~ 848 ms |
+| executable-app:17_openj9       |            \~ 278 MB |    \~ 1048 ms |    \~ 1062 ms |
+| jlink-app:17_openj9            |            \~ 163 MB |    \~ 2366 ms |    \~ 2474 ms |
+| jlink-compressed-app:17_openj9 |            \~ 140 MB |    \~ 2463 ms |    \~ 2522 ms |
 
 
 | Deployment (OSGi Connect)              | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |                  ---:|           ---:|           ---:|
-| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 276 MB |     <br>\~ 1042 ms<br>\~ 1185 ms |     <br>\~ 1063 ms<br>\~ 1063 ms |
-| jlink-atomos-app:17_openj9            | \~ 163 MB  |            |    \~ 2990 ms |    \~ 2751 ms |
-| jlink-atomos-compressed-app:17_openj9 | \~ 140 MB  |            |    \~ 2712 ms |    \~ 2804 ms |
-
-The results show that the performance of a custom runtime image created with the IBM Semeru (OpenJ9) `jlink` command is about twice as slow compared to the version created with Eclipse Temurin.
+| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 276 MB |     <br>\~ 911 ms<br>\~ 1016 ms |     <br>\~ 915 ms<br>\~ 1017 ms |
+| jlink-atomos-app:17_openj9            | \~ 163 MB  |    \~ 2539 ms |    \~ 2330 ms |
+| jlink-atomos-compressed-app:17_openj9 | \~ 140 MB  |    \~ 2645 ms |    \~ 2462 ms |
 
 ### GraalVM 17
 
@@ -635,6 +649,13 @@ For the GraalVM we only have benchmark results inside the container with an Alpi
 | :---                            |        ---:|                  ---:|           ---:|           ---:|
 | graalvm:17                             | \~  38 MB  |            \~  46 MB |             - |             - |
 | graalvm:17-alpine                      | \~  43 MB  |            \~  53 MB |      \~ 34 ms |             - |
+
+### Observations
+
+- for folder based plain OSGi the clean start is slower than using a bundle cache
+- for the plain OSGi executable jar and the custom runtime images based on it the clean start is likely as fast as the start with cache
+- for the Atomos deployment variants the clean start is typically slower than the start with cache
+- the startup performance of a custom runtime image created with the IBM Semeru (OpenJ9) `jlink` command is about twice as slow compared to the version created with Eclipse Temurin.
 
 ## Future Investigation: Checkpoint and Restore
 

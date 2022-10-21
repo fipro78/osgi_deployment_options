@@ -834,7 +834,7 @@
                     <dockerFile>${project.basedir}/src/main/docker/folder_based_atomos_alpine/Dockerfile</dockerFile>
                     <contextDir>${project.build.directory}/deployment/folder_based_atomos</contextDir>
                     <args>
-                      <VERSION>11-jdk-alpine</VERSION>
+                      <VERSION>11-jre-alpine</VERSION>
                       <USAGE>modulepath</USAGE>
                     </args>
                   </build>
