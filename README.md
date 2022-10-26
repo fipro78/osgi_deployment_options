@@ -657,6 +657,14 @@ For the GraalVM we only have benchmark results inside the container with an Alpi
 - for the Atomos deployment variants the clean start is typically slower than the start with cache
 - the startup performance of a custom runtime image created with the IBM Semeru (OpenJ9) `jlink` command is about twice as slow compared to the version created with Eclipse Temurin.
 
+__Note:__  
+After a discussion with some IBM experts at the EclipseCon Europe we discovered some options to improve the startup performance:
+
+- Add the [-Xquickstart](https://www.eclipse.org/openj9/docs/xquickstart/) option
+- Use the [-Xshareclasses](https://www.eclipse.org/openj9/docs/xshareclasses/) option  
+To use the -Xshareclasses option with a custom runtime image with jlink you need to ensure that the module `openj9.sharedclasses` is added to the extra modules. Otherwise the shareclasses support is missing in the custom runtime. Then you can create the sharedclasses cache in the build container and then copy it to the production container.  
+This evaluation will be added later for comparison.
+
 ## Future Investigation: Checkpoint and Restore
 
 - [Instant On Java Cloud Applications with Checkpoint and Restore](https://www.youtube.com/watch?v=E_5MgOYnEpY)

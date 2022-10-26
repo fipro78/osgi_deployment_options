@@ -756,6 +756,8 @@
             <extensions>true</extensions>
             <configuration>
               <images combine.children="append">
+                <!--
+                -->
                 <image>
                   <name>osgi-deployment-folder-app:17_openj9</name>
                   <alias>benchmark_folder_17_openj9</alias>
@@ -886,12 +888,15 @@
                     <env>
                       <BENCHMARK_SUFFIX>_OPENJ9</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
+                      <!-- <EXTRA_MODULES>openj9.sharedclasses</EXTRA_MODULES> -->
+                      <JAVA_OPTS_EXTRA>-Xquickstart</JAVA_OPTS_EXTRA>
                     </env>
                     <cmd>/app/bin/start_benchmark.sh</cmd>
                     <wait>
                       <time>${container.timeout}</time>
                       <exit>0</exit>
                     </wait>
+                    <!-- <log><color>cyan</color></log> -->
                   </run>
                 </image>
                 <image>
