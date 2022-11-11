@@ -1,16 +1,33 @@
-C:\Development\JDK\OpenJDK\jdk-17.0.3+7\bin\jlink.exe ^
+%JAVA_HOME%\bin\jlink.exe ^
+--no-header-files ^
+--no-man-pages ^
+--module-path equinox-app.jar ^
+--add-modules org.fipro.service.equinox.app ^
+--launcher start=org.fipro.service.equinox.app ^
+--output jlink_executable
+
+%JAVA_HOME%\bin\jlink.exe ^
 --compress=2 ^
 --no-header-files ^
 --no-man-pages ^
---module-path atomos_equinox.jar ^
---add-modules equinox.app ^
---launcher start=equinox.app ^
+--module-path equinox-app.jar ^
+--add-modules org.fipro.service.equinox.app ^
+--launcher start=org.fipro.service.equinox.app ^
 --output jlink_executable_compressed
- 
-C:\Development\JDK\OpenJDK\jdk-17.0.3+7\bin\jlink.exe ^
+
+%JAVA_HOME%\bin\jlink.exe ^
 --no-header-files ^
 --no-man-pages ^
---module-path atomos_equinox.jar ^
---add-modules equinox.app ^
---launcher start=equinox.app ^
+--module-path atomos-equinox-app.jar ^
+--add-modules org.fipro.service.equinox.app ^
+--launcher start=org.fipro.service.equinox.app ^
 --output jlink_executable
+
+%JAVA_HOME%\bin\jlink.exe ^
+--compress=2 ^
+--no-header-files ^
+--no-man-pages ^
+--module-path atomos-equinox-app.jar ^
+--add-modules org.fipro.service.equinox.app ^
+--launcher start=org.fipro.service.equinox.app ^
+--output jlink_executable_compressed

@@ -12,7 +12,7 @@ fi
 for i in $(seq $ITERATION_COUNT)
 do
   THETIME=$(date +%s%3N)
-  JAVA_OPTS="$JAVA_OPTS_ORIGINAL -Dbenchmark.appid=FOLDER_ATOMOS_MODULEPATH"$BENCHMARK_SUFFIX" -Dbenchmark.executionid=$i -Dbenchmark.starttime=$THETIME"
+  JAVA_OPTS="$JAVA_OPTS_ORIGINAL $JAVA_OPTS_EXTRA -Dbenchmark.appid=FOLDER_ATOMOS_MODULEPATH"$BENCHMARK_SUFFIX" -Dbenchmark.executionid=$i -Dbenchmark.starttime=$THETIME"
   echo $USAGE $JAVA_OPTS
   . ./start.sh
 done
@@ -20,7 +20,7 @@ done
 for i in $(seq $ITERATION_COUNT)
 do
   THETIME=$(date +%s%3N)
-  JAVA_OPTS="$JAVA_OPTS_ORIGINAL -Dbenchmark.appid=FOLDER_ATOMOS_MODULEPATH"$BENCHMARK_SUFFIX"_CLEAN -Dbenchmark.executionid=$i -Dbenchmark.starttime=$THETIME"
+  JAVA_OPTS="$JAVA_OPTS_ORIGINAL $JAVA_OPTS_EXTRA -Dbenchmark.appid=FOLDER_ATOMOS_MODULEPATH"$BENCHMARK_SUFFIX"_CLEAN -Dbenchmark.executionid=$i -Dbenchmark.starttime=$THETIME"
   echo $USAGE $JAVA_OPTS
   . ./start.sh org.osgi.framework.storage.clean=onFirstInit
 done
@@ -30,7 +30,7 @@ USAGE="classpath"
 for i in $(seq $ITERATION_COUNT)
 do
   THETIME=$(date +%s%3N)
-  JAVA_OPTS="$JAVA_OPTS_ORIGINAL -Dbenchmark.appid=FOLDER_ATOMOS_CLASSPATH"$BENCHMARK_SUFFIX" -Dbenchmark.executionid=$i -Dbenchmark.starttime=$THETIME"
+  JAVA_OPTS="$JAVA_OPTS_ORIGINAL $JAVA_OPTS_EXTRA -Dbenchmark.appid=FOLDER_ATOMOS_CLASSPATH"$BENCHMARK_SUFFIX" -Dbenchmark.executionid=$i -Dbenchmark.starttime=$THETIME"
   echo $USAGE $JAVA_OPTS
   . ./start.sh
 done
@@ -38,7 +38,7 @@ done
 for i in $(seq $ITERATION_COUNT)
 do
   THETIME=$(date +%s%3N)
-  JAVA_OPTS="$JAVA_OPTS_ORIGINAL -Dbenchmark.appid=FOLDER_ATOMOS_CLASSPATH"$BENCHMARK_SUFFIX"_CLEAN -Dbenchmark.executionid=$i -Dbenchmark.starttime=$THETIME"
+  JAVA_OPTS="$JAVA_OPTS_ORIGINAL $JAVA_OPTS_EXTRA -Dbenchmark.appid=FOLDER_ATOMOS_CLASSPATH"$BENCHMARK_SUFFIX"_CLEAN -Dbenchmark.executionid=$i -Dbenchmark.starttime=$THETIME"
   echo $USAGE $JAVA_OPTS
   . ./start.sh org.osgi.framework.storage.clean=onFirstInit
 done

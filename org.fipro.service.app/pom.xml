@@ -911,6 +911,7 @@
                     </args>
                   </build>
                 </image>
+                <!--
                 <image>
                   <name>osgi-deployment-executable-%a:17_openj9</name>
                   <alias>executable_17_openj9</alias>
@@ -996,8 +997,21 @@
                     </args>
                   </build>
                 </image>
-                <!--
                 -->
+
+                <image>
+                  <name>osgi-deployment-folder-%a:17_openj9_scc</name>
+                  <alias>folder_based_17_openj9_scc</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/folder_based_debian/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/folder_based</contextDir>
+                    <args>
+                      <IMAGE_NAME>ibm-semeru-runtimes</IMAGE_NAME>
+                      <VERSION>open-17-jre-jammy</VERSION>
+                      <JAVA_OPTS_EXTRA>-Xshareclasses:name=app_cache,cacheDir=/app/.scc</JAVA_OPTS_EXTRA>
+                    </args>
+                  </build>
+                </image>
               </images>
             </configuration>
           </plugin>

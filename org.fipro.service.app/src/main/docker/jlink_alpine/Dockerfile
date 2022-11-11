@@ -4,6 +4,8 @@ ARG VERSION=17-jdk-alpine
 ARG MODULE_NAME=org.fipro.service.equinox.app
 ARG BENCHMARK_APPID=JLINK
 
+ARG JAVA_OPTS_EXTRA
+
 FROM ${IMAGE_NAME}:${VERSION} AS build
 
 ARG EXECUTABLE_JAR=equinox-app.jar
@@ -39,6 +41,9 @@ ENV MODULE_NAME=${MODULE_NAME}
 
 ARG BENCHMARK_APPID
 ENV BENCHMARK_APPID=${BENCHMARK_APPID}
+
+ARG JAVA_OPTS_EXTRA
+ENV JAVA_OPTS_EXTRA=${JAVA_OPTS_EXTRA}
 
 # enable ZGC garbage collector - GC processing in parallel to the application, reduces GC pauses, in Java 11 only available via -XX:+UnlockExperimentalVMOptions
 # ENV JAVA_OPTS="${JAVA_OPTS:--XX:+UseZGC}"
