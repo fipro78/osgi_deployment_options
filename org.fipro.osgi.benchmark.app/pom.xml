@@ -522,30 +522,6 @@
                 </image>
                 <!--
                 -->
-                <image>
-                  <name>osgi-deployment-jlink-atomos-app:17_temurin</name>
-                  <alias>benchmark_jlink_atomos_17_quickstart</alias>
-                  
-                  <run>
-                    <dependsOn>
-                      <container>benchmark_jlink_atomos_compressed_17</container>
-                    </dependsOn>
-                    <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
-                    </network>
-                    <env>
-                      <BENCHMARK_SUFFIX>_QUICKSTART</BENCHMARK_SUFFIX>
-                      <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
-                      <JAVA_OPTS_EXTRA>-client</JAVA_OPTS_EXTRA>
-                    </env>
-                    <cmd>/app/bin/start_benchmark.sh</cmd>
-                    <wait>
-                      <time>${container.timeout}</time>
-                      <exit>0</exit>
-                    </wait>
-                  </run>
-                </image>
               </images>
             </configuration>
           </plugin>
@@ -805,7 +781,6 @@
                     </wait>
                   </run>
                 </image>
-                <!--
                 <image>
                   <name>osgi-deployment-executable-app:17_openj9</name>
                   <alias>benchmark_executable_17_openj9</alias>
@@ -944,15 +919,17 @@
                     </wait>
                   </run>
                 </image>
+                <!--
                 -->
+
+                <!-- -Xquickstart -->
                 <image>
                   <name>osgi-deployment-folder-app:17_openj9</name>
                   <alias>benchmark_folder_17_openj9_quickstart</alias>
                   
                   <run>
                     <dependsOn>
-                      <container>benchmark_folder_17_openj9</container>
-                      <!-- <container>benchmark_jlink_atomos_compressed_17_openj9</container> -->
+                      <container>benchmark_jlink_atomos_compressed_17_openj9</container>
                     </dependsOn>
                     <network>
                       <mode>container</mode>
@@ -970,7 +947,6 @@
                     </wait>
                   </run>
                 </image>
-                <!--
                 <image>
                   <name>osgi-deployment-executable-app:17_openj9</name>
                   <alias>benchmark_executable_17_openj9_quickstart</alias>
@@ -1115,15 +1091,17 @@
                     </wait>
                   </run>
                 </image>
+                <!--
                 -->
 
+                <!-- shared class cache -->
                 <image>
                   <name>osgi-deployment-folder-app:17_openj9_scc</name>
                   <alias>benchmark_folder_17_openj9_scc</alias>
                   
                   <run>
                     <dependsOn>
-                      <container>benchmark_folder_17_openj9_quickstart</container>
+                      <container>benchmark_jlink_atomos_compressed_17_openj9_quickstart</container>
                     </dependsOn>
                     <network>
                       <mode>container</mode>
@@ -1140,8 +1118,145 @@
                     </wait>
                   </run>
                 </image>
+                <image>
+                  <name>osgi-deployment-executable-app:17_openj9_scc</name>
+                  <alias>benchmark_executable_17_openj9_scc</alias>
+                  
+                  <run>
+                    <dependsOn>
+                      <container>benchmark_folder_17_openj9_scc</container>
+                    </dependsOn>
+                    <network>
+                      <mode>container</mode>
+                      <name>benchmark_service</name>
+                    </network>
+                    <env>
+                      <BENCHMARK_SUFFIX>_OPENJ9_SCC</BENCHMARK_SUFFIX>
+                      <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
+                    </env>
+                    <cmd>./start_benchmark.sh</cmd>
+                    <wait>
+                      <time>${container.timeout}</time>
+                      <exit>0</exit>
+                    </wait>
+                  </run>
+                </image>
+                <image>
+                  <name>osgi-deployment-jlink-app:17_openj9_scc</name>
+                  <alias>benchmark_jlink_17_scc</alias>
+                  
+                  <run>
+                    <dependsOn>
+                      <container>benchmark_executable_17_openj9_scc</container>
+                    </dependsOn>
+                    <network>
+                      <mode>container</mode>
+                      <name>benchmark_service</name>
+                    </network>
+                    <env>
+                      <BENCHMARK_SUFFIX>_OPENJ9_SCC</BENCHMARK_SUFFIX>
+                      <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
+                    </env>
+                    <cmd>/app/bin/start_benchmark.sh</cmd>
+                    <wait>
+                      <time>${container.timeout}</time>
+                      <exit>0</exit>
+                    </wait>
+                  </run>
+                </image>
+                <image>
+                  <name>osgi-deployment-jlink-compressed-app:17_openj9_scc</name>
+                  <alias>benchmark_jlink_compressed_17_openj9_scc</alias>
+                  
+                  <run>
+                    <dependsOn>
+                      <container>benchmark_jlink_17_openj9_scc</container>
+                    </dependsOn>
+                    <network>
+                      <mode>container</mode>
+                      <name>benchmark_service</name>
+                    </network>
+                    <env>
+                      <BENCHMARK_SUFFIX>_OPENJ9_SCC</BENCHMARK_SUFFIX>
+                      <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
+                    </env>
+                    <cmd>/app/bin/start_benchmark.sh</cmd>
+                    <wait>
+                      <time>${container.timeout}</time>
+                      <exit>0</exit>
+                    </wait>
+                  </run>
+                </image>
+                <image>
+                  <name>osgi-deployment-folder-atomos-app:17_openj9_scc</name>
+                  <alias>benchmark_folder_atomos_17_openj9_scc</alias>
+                  
+                  <run>
+                    <dependsOn>
+                      <container>benchmark_jlink_compressed_17_openj9_scc</container>
+                    </dependsOn>
+                    <network>
+                      <mode>container</mode>
+                      <name>benchmark_service</name>
+                    </network>
+                    <env>
+                      <BENCHMARK_SUFFIX>_OPENJ9_SCC</BENCHMARK_SUFFIX>
+                      <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
+                    </env>
+                    <cmd>./start_benchmark.sh</cmd>
+                    <wait>
+                      <time>${container.timeout}</time>
+                      <exit>0</exit>
+                    </wait>
+                  </run>
+                </image>
+                <image>
+                  <name>osgi-deployment-jlink-atomos-app:17_openj9_scc</name>
+                  <alias>benchmark_jlink_atomos_17_openj9_scc</alias>
+                  
+                  <run>
+                    <dependsOn>
+                      <container>benchmark_folder_atomos_17_openj9_scc</container>
+                    </dependsOn>
+                    <network>
+                      <mode>container</mode>
+                      <name>benchmark_service</name>
+                    </network>
+                    <env>
+                      <BENCHMARK_SUFFIX>_OPENJ9_SCC</BENCHMARK_SUFFIX>
+                      <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
+                    </env>
+                    <cmd>/app/bin/start_benchmark.sh</cmd>
+                    <wait>
+                      <time>${container.timeout}</time>
+                      <exit>0</exit>
+                    </wait>
+                  </run>
+                </image>
+                <image>
+                  <name>osgi-deployment-jlink-atomos-compressed-app:17_openj9_scc</name>
+                  <alias>benchmark_jlink_atomos_compressed_17_openj9_scc</alias>
+                  
+                  <run>
+                    <dependsOn>
+                      <container>benchmark_jlink_atomos_17_openj9_scc</container>
+                    </dependsOn>
+                    <network>
+                      <mode>container</mode>
+                      <name>benchmark_service</name>
+                    </network>
+                    <env>
+                      <BENCHMARK_SUFFIX>_OPENJ9_SCC</BENCHMARK_SUFFIX>
+                      <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
+                    </env>
+                    <cmd>/app/bin/start_benchmark.sh</cmd>
+                    <wait>
+                      <time>${container.timeout}</time>
+                      <exit>0</exit>
+                    </wait>
+                  </run>
+                </image>
 
-                      <!-- <EXTRA_MODULES>openj9.sharedclasses</EXTRA_MODULES> -->
                     <!-- <log><color>cyan</color></log> -->
 
               </images>

@@ -3,6 +3,8 @@ ARG VERSION=17-jre-alpine
 
 ARG JAVA_OPTS_EXTRA
 
+# Build Image
+
 FROM ${IMAGE_NAME}:${VERSION} as build
 
 ARG JAVA_OPTS_EXTRA
@@ -14,11 +16,14 @@ ENV JAVA_OPTS="${JAVA_OPTS:--Dcontainer.init=true}"
 
 RUN \
   apk --no-cache add tini && \
+  rm /app/init_scc_size.sh && \
   chmod 755 /app/start.sh && \
   chmod 755 /app/start_benchmark.sh && \
   cd /app && \
   /sbin/tini /app/start.sh
   
+
+# Production Image
 
 FROM ${IMAGE_NAME}:${VERSION}
 

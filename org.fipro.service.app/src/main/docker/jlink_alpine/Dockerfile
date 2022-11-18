@@ -6,6 +6,8 @@ ARG BENCHMARK_APPID=JLINK
 
 ARG JAVA_OPTS_EXTRA
 
+# Build Image
+
 FROM ${IMAGE_NAME}:${VERSION} AS build
 
 ARG EXECUTABLE_JAR=equinox-app.jar
@@ -13,6 +15,11 @@ ARG MODULE_NAME
 ARG EXTRA_MODULES=
 ARG COMPRESS=0
 ARG BENCHMARK_APPID
+
+ARG JAVA_OPTS_EXTRA
+ENV JAVA_OPTS_EXTRA=${JAVA_OPTS_EXTRA}
+
+ENV JAVA_OPTS="${JAVA_OPTS:--Dcontainer.init=true -Dlaunch.keep=true -Dlaunch.storage.dir=/app/cache}"
 
 COPY $EXECUTABLE_JAR /tmp/$EXECUTABLE_JAR
 
@@ -29,10 +36,17 @@ RUN \
 COPY /etc /app/etc
 COPY /start* /app/bin/
 
-RUN \
- chmod 755 /app/bin/start.sh && \
- chmod 755 /app/bin/start_benchmark.sh
+ENV PATH=/app/jre/bin:$PATH
 
+RUN \
+  apk --no-cache add tini && \
+  chmod 755 /app/bin/start.sh && \
+  chmod 755 /app/bin/start_benchmark.sh && \
+  cd /app && \
+  /sbin/tini /app/bin/start.sh
+
+
+# Production Image
 
 FROM alpine:3
 

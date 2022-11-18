@@ -5,10 +5,16 @@ ARG USAGE=modulepath
 
 ARG JAVA_OPTS_EXTRA
 
+# Build Image
+
 FROM ${IMAGE_NAME}:${VERSION} as build
 
 ARG USAGE
 ENV USAGE=${USAGE}
+
+ARG JAVA_OPTS_EXTRA
+ENV JAVA_OPTS_EXTRA=${JAVA_OPTS_EXTRA}
+
 ENV JAVA_OPTS="${JAVA_OPTS:--Dcontainer.init=true}"
 
 COPY /app /app
@@ -20,6 +26,8 @@ RUN \
   cd /app && \
   /sbin/tini /app/start.sh
   
+
+# Production Image
 
 FROM ${IMAGE_NAME}:${VERSION}
 

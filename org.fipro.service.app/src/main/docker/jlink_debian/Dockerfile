@@ -6,6 +6,8 @@ ARG BENCHMARK_APPID=JLINK
 
 ARG JAVA_OPTS_EXTRA
 
+# Build Image
+
 FROM ${IMAGE_NAME}:${VERSION} AS build
 
 ARG EXECUTABLE_JAR=equinox-app.jar
@@ -27,12 +29,44 @@ RUN \
 		--output /app/jre
 
 COPY /etc /app/etc
-COPY /start* /app/bin/
+COPY /*.sh /app/bin/
 
 RUN \
- chmod 755 /app/bin/start.sh && \
- chmod 755 /app/bin/start_benchmark.sh
+  chmod 755 /app/bin/start.sh && \
+  chmod 755 /app/bin/start_benchmark.sh && \
+  chmod 755 /app/bin/init_scc_size.sh
 
+
+# Cache Creation Image
+# --------------------
+# The default Semeru image has sharedclasses enabled by default
+# To run a custom JRE inside this container, the image needs to contain the openj9.sharedclasses module
+# As we only want to include that module if we are making use of it, we need to use an additional build step for the creation of the bundle cache
+
+FROM debian:bullseye-slim AS cache
+
+ARG MODULE_NAME
+ENV MODULE_NAME=${MODULE_NAME}
+
+ARG BENCHMARK_APPID
+ENV BENCHMARK_APPID=${BENCHMARK_APPID}
+
+ARG JAVA_OPTS_EXTRA
+ENV JAVA_OPTS_EXTRA=${JAVA_OPTS_EXTRA}
+
+ENV JAVA_OPTS="${JAVA_OPTS:--Dcontainer.init=true -Dlaunch.keep=true -Dlaunch.storage.dir=/app/cache}"
+
+COPY --from=build /app /app
+
+ENV PATH=/app/jre/bin:$PATH
+
+RUN \
+  cd /app/bin && \
+  /app/bin/init_scc_size.sh && \
+  rm /app/bin/init_scc_size.sh
+ 
+
+# Production Image
 
 FROM debian:bullseye-slim
 
@@ -61,7 +95,7 @@ EXPOSE 11311
 
 RUN useradd -s /bin/bash appuser
 
-COPY --from=build --chown=appuser:appuser /app /app
+COPY --from=cache --chown=appuser:appuser /app /app
 
 ENV PATH=/app/jre/bin:$PATH
 

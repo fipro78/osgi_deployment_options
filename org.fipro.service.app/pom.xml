@@ -256,6 +256,24 @@
               </resources>
             </configuration>
           </execution>
+          <execution>
+            <id>copy-init-scc</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/deployment/folder_based/app</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <includes>
+                    <include>init_scc_size.sh</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
 
           <!-- copy executable jar in docker build context folder -->
           <execution>
@@ -302,6 +320,24 @@
               <resources>
                 <resource>
                   <directory>src/main/resources/etc</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-executable-init-scc</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/deployment/executable</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <includes>
+                    <include>init_scc_size.sh</include>
+                  </includes>
                 </resource>
               </resources>
             </configuration>
@@ -359,6 +395,24 @@
               </resources>
             </configuration>
           </execution>
+          <execution>
+            <id>copy-executable-jlink-init-scc</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/deployment/jlink</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <includes>
+                    <include>init_scc_size.sh</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
 
           <!-- copy configuration and applications jars for Atomos folder distribution -->
           <execution>
@@ -410,6 +464,24 @@
               <resources>
                 <resource>
                   <directory>src/main/resources/etc</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-atomos-init-scc</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/deployment/folder_based_atomos/app</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <includes>
+                    <include>init_scc_size.sh</include>
+                  </includes>
                 </resource>
               </resources>
             </configuration>
@@ -500,6 +572,24 @@
               <resources>
                 <resource>
                   <directory>src/main/resources/etc</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-executable-jlink-atomos-init-scc</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/deployment/jlink_atomos</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <includes>
+                    <include>init_scc_size.sh</include>
+                  </includes>
                 </resource>
               </resources>
             </configuration>
@@ -911,7 +1001,6 @@
                     </args>
                   </build>
                 </image>
-                <!--
                 <image>
                   <name>osgi-deployment-executable-%a:17_openj9</name>
                   <alias>executable_17_openj9</alias>
@@ -957,7 +1046,6 @@
                     </args>
                   </build>
                 </image>
-                
                 <image>
                   <name>osgi-deployment-folder-atomos-%a:17_openj9</name>
                   <alias>folder_based_atomos_17_openj9</alias>
@@ -997,8 +1085,11 @@
                     </args>
                   </build>
                 </image>
+                                
+                <!--
                 -->
 
+                <!-- Images with enabled class data sharing -->
                 <image>
                   <name>osgi-deployment-folder-%a:17_openj9_scc</name>
                   <alias>folder_based_17_openj9_scc</alias>
@@ -1012,6 +1103,104 @@
                     </args>
                   </build>
                 </image>
+                <image>
+                  <name>osgi-deployment-executable-%a:17_openj9_scc</name>
+                  <alias>executable_17_openj9_scc</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/executable_debian/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/executable</contextDir>
+                    <args>
+                      <IMAGE_NAME>ibm-semeru-runtimes</IMAGE_NAME>
+                      <VERSION>open-17-jre-jammy</VERSION>
+                      <EXECUTABLE_JAR>equinox-app.jar</EXECUTABLE_JAR>
+                      <JAVA_OPTS_EXTRA>-Xshareclasses:name=app_cache,cacheDir=/app/.scc</JAVA_OPTS_EXTRA>
+                    </args>
+                  </build>
+                </image>
+                <image>
+                  <name>osgi-deployment-jlink-%a:17_openj9_scc</name>
+                  <alias>jlink_17_openj9_scc</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/jlink_debian/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/jlink</contextDir>
+                    <args>
+                      <IMAGE_NAME>ibm-semeru-runtimes</IMAGE_NAME>
+                      <VERSION>open-17-jdk-jammy</VERSION>
+                      <EXECUTABLE_JAR>equinox-app.jar</EXECUTABLE_JAR>
+                      <MODULE_NAME>org.fipro.service.equinox.app</MODULE_NAME>
+                      <COMPRESS>0</COMPRESS>
+                      <BENCHMARK_APPID>JLINK</BENCHMARK_APPID>
+                      <JAVA_OPTS_EXTRA>-Xshareclasses:name=app_cache,cacheDir=/app/.scc</JAVA_OPTS_EXTRA>
+                      <EXTRA_MODULES>openj9.sharedclasses</EXTRA_MODULES>
+                    </args>
+                  </build>
+                </image>
+                <image>
+                  <name>osgi-deployment-jlink-compressed-%a:17_openj9_scc</name>
+                  <alias>jlink_compressed_17_openj9_scc</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/jlink_debian/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/jlink</contextDir>
+                    <args>
+                      <IMAGE_NAME>ibm-semeru-runtimes</IMAGE_NAME>
+                      <VERSION>open-17-jdk-jammy</VERSION>
+                      <EXECUTABLE_JAR>equinox-app.jar</EXECUTABLE_JAR>
+                      <MODULE_NAME>org.fipro.service.equinox.app</MODULE_NAME>
+                      <COMPRESS>2</COMPRESS>
+                      <BENCHMARK_APPID>JLINK_COMPRESSED</BENCHMARK_APPID>
+                      <JAVA_OPTS_EXTRA>-Xshareclasses:name=app_cache,cacheDir=/app/.scc</JAVA_OPTS_EXTRA>
+                      <EXTRA_MODULES>openj9.sharedclasses</EXTRA_MODULES>
+                    </args>
+                  </build>
+                </image>
+                <image>
+                  <name>osgi-deployment-folder-atomos-%a:17_openj9_scc</name>
+                  <alias>folder_based_atomos_17_openj9_scc</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/folder_based_atomos_debian/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/folder_based_atomos</contextDir>
+                    <args>
+                      <USAGE>modulepath</USAGE>
+                      <BENCHMARK_APPID>_SCC</BENCHMARK_APPID>
+                      <JAVA_OPTS_EXTRA>-Xshareclasses:name=app_cache,cacheDir=/app/.scc</JAVA_OPTS_EXTRA>
+                      <EXTRA_MODULES>openj9.sharedclasses</EXTRA_MODULES>
+                    </args>
+                  </build>
+                </image>
+                <image>
+                  <name>osgi-deployment-jlink-atomos-%a:17_openj9_scc</name>
+                  <alias>jlink_atomos_17_openj9_scc</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/jlink_debian/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/jlink_atomos</contextDir>
+                    <args>
+                      <EXECUTABLE_JAR>atomos-equinox-app.jar</EXECUTABLE_JAR>
+                      <MODULE_NAME>org.fipro.service.equinox.app</MODULE_NAME>
+                      <COMPRESS>0</COMPRESS>
+                      <BENCHMARK_APPID>JLINK_ATOMOS</BENCHMARK_APPID>
+                      <JAVA_OPTS_EXTRA>-Xshareclasses:name=app_cache,cacheDir=/app/.scc</JAVA_OPTS_EXTRA>
+                      <EXTRA_MODULES>openj9.sharedclasses</EXTRA_MODULES>
+                    </args>
+                  </build>
+                </image>
+                <image>
+                  <name>osgi-deployment-jlink-atomos-compressed-%a:17_openj9_scc</name>
+                  <alias>jlink_atomos_compressed_17_openj9_scc</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/jlink_debian/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/jlink_atomos</contextDir>
+                    <args>
+                      <EXECUTABLE_JAR>atomos-equinox-app.jar</EXECUTABLE_JAR>
+                      <MODULE_NAME>org.fipro.service.equinox.app</MODULE_NAME>
+                      <COMPRESS>2</COMPRESS>
+                      <BENCHMARK_APPID>JLINK_ATOMOS_COMPRESSED</BENCHMARK_APPID>
+                      <JAVA_OPTS_EXTRA>-Xshareclasses:name=app_cache,cacheDir=/app/.scc</JAVA_OPTS_EXTRA>
+                      <EXTRA_MODULES>openj9.sharedclasses</EXTRA_MODULES>
+                    </args>
+                  </build>
+                </image>
+                <!--
+                -->
               </images>
             </configuration>
           </plugin>

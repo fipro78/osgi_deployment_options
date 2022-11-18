@@ -3,21 +3,27 @@ ARG VERSION=open-17-jre-jammy
 
 ARG JAVA_OPTS_EXTRA
 
+# Build Image
+
 FROM ${IMAGE_NAME}:${VERSION} as build
 
 ARG JAVA_OPTS_EXTRA
 ENV JAVA_OPTS_EXTRA=${JAVA_OPTS_EXTRA}
 
-COPY /app /app
-
 ENV JAVA_OPTS="${JAVA_OPTS:--Dcontainer.init=true}"
+
+COPY /app /app
 
 RUN \
   chmod 755 /app/start.sh && \
   chmod 755 /app/start_benchmark.sh && \
+  chmod 755 /app/init_scc_size.sh && \
   cd /app && \
-  /app/start.sh
+  /app/init_scc_size.sh && \
+  rm /app/init_scc_size.sh  
   
+
+# Production Image
 
 FROM ${IMAGE_NAME}:${VERSION}
 
@@ -34,3 +40,4 @@ WORKDIR /app
 USER appuser
 
 CMD ["./start.sh"]
+#CMD ["/bin/sh"]

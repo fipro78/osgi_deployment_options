@@ -2,7 +2,7 @@
 #ARG IMAGE_NAME=ghcr.io/graalvm/native-image
 #ARG VERSION=22.2.0
 ARG IMAGE_NAME=ghcr.io/graalvm/graalvm-ce
-ARG VERSION=ol8-java17-22.2.0
+ARG VERSION=ol8-java17-22.3.0
 
 FROM ${IMAGE_NAME}:${VERSION} AS build
 
@@ -52,6 +52,7 @@ RUN \
 
 RUN \
   mkdir -p /result && \
+  mkdir -p /result/configuration && \
   cp /build/atomos /result && \
   cp -r /build/atomos_lib /result/atomos_lib
   

@@ -589,25 +589,28 @@ java -cp "bundles/*" org.apache.felix.atomos.Atomos org.osgi.framework.storage.c
 __Note:__  
 If you intend to create a container with a folder based Equinox application that contains a bundle cache, check if you can use a multi-stage build where you start the application in the first container and then copy the application together with the bundle cache to the target container.
 
+__Note:__  
+When starting a folder based Equinox application, by default the bundle cache is located in the folder _configuration_ relative to the Equinox OSGi bundle. For the Atomos variant where all jars are placed in the _bundles_ folder this means, the bundle cache is located in _bundles/configuration_. This can be changed by setting the property `org.osgi.framework.storage`, which needs to be passed as program argument for the Atomos variant.
+
 ## Benchmark Results
 
-The following tables show the results for the created image sizes and the average time it took to start the application inside the container.
+The following tables show the results for the created image sizes and the average time it took to start the application inside the container. Please note that these numbers are an average over 100 start-stop-cycles inside a container. So they are not 100% accurate and will show different numbers in detail in each test run. The measurement is only intended to show the basic implications of the different deployment options.
 
 ### Eclipse Temurin 17
 
 | Deployment (plain OSGi)         | Image Size | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |        ---:|                  ---:|           ---:|           ---:|
 | folder-app:17_temurin           | \~ 171 MB  |            \~ 173 MB |     \~ 982 ms |     \~ 901 ms |
-| executable-app:17_temurin       | \~ 174 MB  |            \~ 176 MB |    \~ 1087 ms |    \~ 1099 ms |
-| jlink-app:17_temurin            | \~  75 MB  |            \~  78 MB |    \~ 1336 ms |    \~ 1345 ms |
-| jlink-compressed-app:17_temurin | \~  53 MB  |            \~  55 MB |    \~ 1497 ms |    \~ 1505 ms |
+| executable-app:17_temurin       | \~ 174 MB  |            \~ 174 MB |    \~ 1087 ms |    \~ 1099 ms |
+| jlink-app:17_temurin            | \~  75 MB  |            \~  79 MB |    \~ 1336 ms |    \~ 1345 ms |
+| jlink-compressed-app:17_temurin | \~  53 MB  |            \~  56 MB |    \~ 1497 ms |    \~ 1505 ms |
 
 
 | Deployment (OSGi Connect)              | Image Size | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |        ---:|                  ---:|           ---:|           ---:|
 | folder-atomos-app:17_temurin<br>classpath<br>modulepath           | \~ 171 MB  |            \~ 173 MB |     <br>\~ 1122 ms<br>\~ 1194 ms |     <br>\~ 973 ms<br>\~ 1052 ms |
-| jlink-atomos-app:17_temurin            | \~  75 MB  |            \~  78 MB |    \~ 1439 ms |    \~ 1326 ms |
-| jlink-atomos-compressed-app:17_temurin | \~  53 MB  |            \~  55 MB |    \~ 1593 ms |    \~ 1445 ms |
+| jlink-atomos-app:17_temurin            | \~  75 MB  |            \~  79 MB |    \~ 1439 ms |    \~ 1326 ms |
+| jlink-atomos-compressed-app:17_temurin | \~  53 MB  |            \~  56 MB |    \~ 1593 ms |    \~ 1445 ms |
 
 ### Eclipse Temurin 11
 
@@ -629,26 +632,72 @@ The following tables show the results for the created image sizes and the averag
 
 | Deployment (plain OSGi)        | Benchmark Image Size | Startup clean | Startup cache |
 | :---                           |                  ---:|           ---:|           ---:|
-| folder-app:17_openj9           |            \~ 276 MB |     \~ 954 ms |     \~ 848 ms |
-| executable-app:17_openj9       |            \~ 278 MB |    \~ 1048 ms |    \~ 1062 ms |
-| jlink-app:17_openj9            |            \~ 163 MB |    \~ 2366 ms |    \~ 2474 ms |
-| jlink-compressed-app:17_openj9 |            \~ 140 MB |    \~ 2463 ms |    \~ 2522 ms |
+| folder-app:17_openj9           |            \~ 276 MB |     \~ 998 ms |     \~ 875 ms |
+| executable-app:17_openj9       |            \~ 278 MB |    \~ 1067 ms |    \~ 1072 ms |
+| jlink-app:17_openj9            |            \~ 163 MB |    \~ 2445 ms |    \~ 2426 ms |
+| jlink-compressed-app:17_openj9 |            \~ 140 MB |    \~ 2600 ms |    \~ 2551 ms |
 
 
 | Deployment (OSGi Connect)              | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |                  ---:|           ---:|           ---:|
-| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 276 MB |     <br>\~ 911 ms<br>\~ 1016 ms |     <br>\~ 915 ms<br>\~ 1017 ms |
-| jlink-atomos-app:17_openj9            | \~ 163 MB  |    \~ 2539 ms |    \~ 2330 ms |
-| jlink-atomos-compressed-app:17_openj9 | \~ 140 MB  |    \~ 2645 ms |    \~ 2462 ms |
+| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 276 MB |     <br>\~ 944 ms<br>\~ 1023 ms |     <br>\~ 944 ms<br>\~ 1029 ms |
+| jlink-atomos-app:17_openj9            | \~ 163 MB  |    \~ 2330 ms |    \~ 2337 ms |
+| jlink-atomos-compressed-app:17_openj9 | \~ 140 MB  |    \~ 2463 ms |    \~ 2445 ms |
+
+__Note:__  
+After a discussion with some IBM experts at the EclipseCon Europe we discovered some options to improve the startup performance.
+
+### IBM Semeru 17 - -Xquickstart
+
+In this scenario the same images are used as in the IBM Semeru 17 scenario. Only the [-Xquickstart](https://www.eclipse.org/openj9/docs/xquickstart/) option is set to improve the startup performance.
+
+| Deployment (plain OSGi)        | Benchmark Image Size | Startup clean | Startup cache |
+| :---                           |                  ---:|           ---:|           ---:|
+| folder-app:17_openj9           |            \~ 276 MB |     \~ 940 ms |     \~ 833 ms |
+| executable-app:17_openj9       |            \~ 278 MB |    \~ 1048 ms |    \~ 1046 ms |
+| jlink-app:17_openj9            |            \~ 163 MB |    \~ 1498 ms |    \~ 1483 ms |
+| jlink-compressed-app:17_openj9 |            \~ 140 MB |    \~ 1636 ms |    \~ 1636 ms |
+
+
+| Deployment (OSGi Connect)              | Benchmark Image Size | Startup clean | Startup cache |
+| :---                            |                  ---:|           ---:|           ---:|
+| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 276 MB |     <br>\~ 912 ms<br>\~ 981 ms |     <br>\~ 917 ms<br>\~ 980 ms |
+| jlink-atomos-app:17_openj9            | \~ 163 MB  |    \~ 1458 ms |    \~ 1464 ms |
+| jlink-atomos-compressed-app:17_openj9 | \~ 140 MB  |    \~ 1615 ms |    \~ 1610 ms |
+
+### IBM Semeru 17 - -Xshareclasses
+
+In this scenario images are created that contain a shared class cache. For this a multi-stage build is used that is first creating a shared class cache with a default size and then ensures to limit the size of the shared class cache in a second step to avoid wasted space. For this the [-Xshareclasses](https://www.eclipse.org/openj9/docs/xshareclasses/) option is used together with the [-Xscmx](https://www.eclipse.org/openj9/docs/xscmx/) JVM option. The script that does the cache creation and optimization is located [here](org.fipro.service.app/src/main/resources/init_scc_size.sh).  
+The application together with the created class cache is then copied to the final production image. Additional information is available at [Introduction to class data sharing](https://www.eclipse.org/openj9/docs/shrc/)
+
+__Note:__  
+To use the `-Xshareclasses` option with a custom runtime image with `jlink` you need to ensure that the module `openj9.sharedclasses` is added to the extra modules. Otherwise the shareclasses support is missing in the custom runtime.  
+Also note that [class sharing is enabled by default](https://blog.openj9.org/2019/10/15/openj9-class-sharing-is-enabled-by-default/), which is especially important to know when trying to run a custom JRE image that was created using `jlink` in a default IBM Semeru container. If the module `openj9.sharedclasses` is not included in the custom JRE, it won't start on the default IBM Semeru container. Copying it to another container will work if the shared class cache is not enabled.
+
+| Deployment (plain OSGi)        | Benchmark Image Size | Startup clean | Startup cache |
+| :---                           |                  ---:|           ---:|           ---:|
+| folder-app:17_openj9           |            \~ 296 MB |     \~ 621 ms |     \~ 555 ms |
+| executable-app:17_openj9       |            \~ 298 MB |    \~  913 ms |    \~  914 ms |
+| jlink-app:17_openj9            |            \~ 187 MB |    \~  974 ms |    \~  971 ms |
+| jlink-compressed-app:17_openj9 |            \~ 164 MB |    \~ 1057 ms |    \~ 1036 ms |
+
+
+| Deployment (OSGi Connect)              | Benchmark Image Size | Startup clean | Startup cache |
+| :---                            |                  ---:|           ---:|           ---:|
+| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 276 MB |     <br>\~ 657 ms<br>\~ 719 ms |     <br>\~ 669 ms<br>\~ 719 ms |
+| jlink-atomos-app:17_openj9            | \~ 188 MB  |    \~ 1011 ms |    \~ 1017 ms |
+| jlink-atomos-compressed-app:17_openj9 | \~ 165 MB  |    \~ 1050 ms |    \~ 1126 ms |
+
+Compared to the images without the shared class cache the size of the containers is about 20 - 25 MB bigger.
 
 ### GraalVM 17
 
-For the GraalVM we only have benchmark results inside the container with an Alpine base image. The scratch image does not have shell scripting support. There is also only a result for a clean start, as the execution does not create a bundle cache.
+For the GraalVM we only have benchmark results inside the container with an Alpine base image. The scratch image does not have shell scripting support.  
 
 | Deployment (OSGi Connect)              | Image Size | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |        ---:|                  ---:|           ---:|           ---:|
 | graalvm:17                             | \~  38 MB  |            \~  46 MB |             - |             - |
-| graalvm:17-alpine                      | \~  43 MB  |            \~  53 MB |      \~ 34 ms |             - |
+| graalvm:17-alpine                      | \~  43 MB  |            \~  54 MB |      \~ 39 ms |      \~ 29 ms |
 
 ### Observations
 
@@ -656,14 +705,16 @@ For the GraalVM we only have benchmark results inside the container with an Alpi
 - for the plain OSGi executable jar and the custom runtime images based on it the clean start is likely as fast as the start with cache
 - for the Atomos deployment variants the clean start is typically slower than the start with cache
 - the startup performance of a custom runtime image created with the IBM Semeru (OpenJ9) `jlink` command is about twice as slow compared to the version created with Eclipse Temurin.
+- using the `-Xquickstart` option the startup performance can be easily improved without any additional steps, which looks like a good way for small commandline applications.
+- using the `-Xshareclasses` option to include and use a shared class cache the startup time can be improved further but of course on cost of image size.
+- The smaller we get in size, the slower the startup. At least if we compare folder vs. executable vs. jlink vs. jlink compressed. The reason is probably the the format of the executable jar with embedded jars.
 
 __Note:__  
-After a discussion with some IBM experts at the EclipseCon Europe we discovered some options to improve the startup performance:
+The current results only investigate container size vs. startup performance. The effects on the runtime performance is NOT considered as of now. The Hotspot VM is able to optimize at runtime, which means that for long running applications like servers, the runtime performance can improve over time, which is for example not possible for native images created using GraalVM.
 
-- Add the [-Xquickstart](https://www.eclipse.org/openj9/docs/xquickstart/) option
-- Use the [-Xshareclasses](https://www.eclipse.org/openj9/docs/xshareclasses/) option  
-To use the -Xshareclasses option with a custom runtime image with jlink you need to ensure that the module `openj9.sharedclasses` is added to the extra modules. Otherwise the shareclasses support is missing in the custom runtime. Then you can create the sharedclasses cache in the build container and then copy it to the production container.  
-This evaluation will be added later for comparison.
+## Future Investigation: Processing time effects
+
+TBD: maybe use APP4MC Migration to investigate the processing performance of the deployment variants.
 
 ## Future Investigation: Checkpoint and Restore
 
