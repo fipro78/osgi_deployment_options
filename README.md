@@ -684,11 +684,15 @@ Also note that [class sharing is enabled by default](https://blog.openj9.org/201
 
 | Deployment (OSGi Connect)              | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |                  ---:|           ---:|           ---:|
-| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 276 MB |     <br>\~ 657 ms<br>\~ 719 ms |     <br>\~ 669 ms<br>\~ 719 ms |
+| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 296 MB |     <br>\~ 657 ms<br>\~ 719 ms |     <br>\~ 669 ms<br>\~ 719 ms |
 | jlink-atomos-app:17_openj9            | \~ 188 MB  |    \~ 1011 ms |    \~ 1017 ms |
 | jlink-atomos-compressed-app:17_openj9 | \~ 165 MB  |    \~ 1050 ms |    \~ 1126 ms |
 
 Compared to the images without the shared class cache the size of the containers is about 20 - 25 MB bigger.
+
+__Note:__  
+The combination of using Atomos with the modulepath and the OpenJ9 `-Xshareclasses` option leads to an `IllegalAccessError`. See https://github.com/eclipse-equinox/equinox/issues/158 for further details.  
+Until a fix is included in Equinox, this can be fixed locally by adding `--add-reads org.eclipse.osgi=openj9.sharedclasses`. This increases the class cache size up to 80 MB.
 
 ### GraalVM 17
 
