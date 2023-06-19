@@ -18,6 +18,10 @@
 
     <!-- Declarative Services -->
     <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.component</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.scr</artifactId>
     </dependency>
@@ -158,7 +162,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>3.6.0</version>
         <executions>
           <!-- load the dependencies -->
           <execution>
@@ -178,7 +182,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>3.3.1</version>
         <executions>
 
           <!-- copy resources (application jars, configuration, equinox) to folder based application structure -->
@@ -235,7 +239,7 @@
                 <resource>
                   <directory>${project.build.directory}/deps</directory>
                   <includes>
-                    <include>org.eclipse.osgi-3.17.200.jar</include>
+                    <include>org.eclipse.osgi-3.18.100.jar</include>
                   </includes>
                 </resource>
               </resources>
@@ -750,6 +754,7 @@
                     <contextDir>${project.build.directory}/deployment/folder_based_atomos</contextDir>
                     <args>
                       <USAGE>modulepath</USAGE>
+<!--                      <USAGE>classpath</USAGE> -->
                     </args>
                   </build>
                 </image>

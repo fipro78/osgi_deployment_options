@@ -86,7 +86,7 @@ This is the default variant in which multiple JARs / OSGi bundles are located in
 As the OSGi framework is doing the loading of bundles and classes, the application can be started via:
 
 ```
-java -jar org.eclipse.osgi-3.17.200.jar
+java -jar org.eclipse.osgi-3.18.100.jar
 ```
 
 This deployment variant requires a Java Runtime to be installed on the host system.
@@ -105,12 +105,12 @@ java -jar app.jar
 
 This deployment variant requires a Java Runtime to be installed on the host system.
 
-The build is using the [bnd Maven Plugins](https://github.com/bndtools/bnd/tree/master/maven).
+The build is using the [bnd Maven Plugins](https://github.com/bndtools/bnd/tree/master/maven-plugins).
 
 Further information can be found here:
  - [bnd](https://bnd.bndtools.org/)
  - [Bndtools](https://bndtools.org/)
- - [bnd Maven Plugins](https://github.com/bndtools/bnd/tree/master/maven)
+ - [bnd Maven Plugins](https://github.com/bndtools/bnd/tree/master/maven-plugins)
  - [bnd Gradle Plugins](https://github.com/bndtools/bnd/tree/master/gradle-plugins)
 
 ### Custom JRE with jlink
@@ -180,7 +180,7 @@ To create a native executable you can use the `native-image` tool provided by Gr
 
 ___Native Image is a technology to compile Java code ahead-of-time to a binary – a native executable. A native executable includes only the code required at run time, that is the application classes, standard-library classes, the language runtime, and statically-linked native code from the JDK.___
 
-[GraalVM Native Image - Getting Started](https://www.graalvm.org/22.2/reference-manual/native-image/)
+[GraalVM Native Image - Getting Started](https://www.graalvm.org/reference-manual/native-image/)
 
 A native image can be created:
 - From a class
@@ -206,7 +206,8 @@ Further information:
 There are several issues you might face when using Atomos. I list some of them here:
 - The executable jar with Atomos created with Bndtools is not working (`org.osgi.framework.BundleException: Error reading bundle content.`)  
 [Bndtools issue 5243](https://github.com/bndtools/bnd/issues/5243)  
-But it does work to create a custom runtime image using `jlink` and the executable jar.
+But it does work to create a custom runtime image using `jlink` and the executable jar.  
+If creating an executable jar with Atomos is required, the usage of the [Spring Boot Loader](https://docs.spring.io/spring-boot/docs/current/reference/html/executable-jar.html) is suggested and shown in the [Atomos Spring Loader Example](https://github.com/apache/felix-atomos/tree/master/atomos.examples/atomos.examples.springloader)
 - Stacktrace when starting Atomos with Equinox on modulepath having the bundles inside a folder (`java.lang.ClassNotFoundException: sun.misc.Unsafe`)  
 [Atomos issue 51](https://github.com/apache/felix-atomos/issues/51)  
 Only an annoying printstacktrace when Unsafe can not be loaded, should not cause any issues.
@@ -292,15 +293,14 @@ __resource-config.json: Ensure to add all services and resources that are necess
 }
 ```
 
-The gathering of reachability metadata is described in more detail in the official [GraalVM Documentation - Native Image Reachability Metadata](https://www.graalvm.org/22.2/reference-manual/native-image/metadata/)
+The gathering of reachability metadata is described in more detail in the official [GraalVM Documentation - Native Image Reachability Metadata](https://www.graalvm.org/reference-manual/native-image/metadata/)
 
 Further information about GraalVM Native Images and Reachability Metadata:
-- [GraalVM Native Image - Getting Started](https://www.graalvm.org/22.2/reference-manual/native-image/)
-- [GraalVM Native Image - Reachability Metadata](https://www.graalvm.org/22.2/reference-manual/native-image/metadata/)
-- [GraalVM Native Image - Collect Metadata with the Tracing Agent](https://www.graalvm.org/22.2/reference-manual/native-image/metadata/AutomaticMetadataCollection/)
-- [GraalVM Native Image - Accessing Resources in Native Image](https://www.graalvm.org/22.2/reference-manual/native-image/dynamic-features/Resources/)
-- [GraalVM Native Image - Reflection in Native Image](https://www.graalvm.org/22.2/reference-manual/native-image/dynamic-features/Reflection/)
-- [GraalVM Native Image - Build a Native Executable with Reflection](https://www.graalvm.org/22.2/reference-manual/native-image/guides/build-with-reflection/)
+- [GraalVM Native Image - Getting Started](https://www.graalvm.org/reference-manual/native-image/)
+- [GraalVM Native Image - Reachability Metadata](https://www.graalvm.org/reference-manual/native-image/metadata/)
+- [GraalVM Native Image - Collect Metadata with the Tracing Agent](https://www.graalvm.org/reference-manual/native-image/metadata/AutomaticMetadataCollection/)
+- [GraalVM Native Image - Accessing Resources in Native Image](https://www.graalvm.org/reference-manual/native-image/dynamic-features/Resources/)
+- [GraalVM Native Image - Reflection in Native Image](https://www.graalvm.org/reference-manual/native-image/dynamic-features/Reflection/)
 
 __Note:__  
 There are also tools that can help in generating the metadata, e.g. the Atomos Maven Plugin is able to do this in the build process.
@@ -314,30 +314,72 @@ Building a native image can be done in different ways. One way is to use the off
 The issue facing with this approach is, that the resulting native image is platform-dependent, e.g. if you execute the build on Windows you will get a Windows executable.
 
 Alternatively you can use a multi-stage build that uses the official GraalVM container images for the build stage.  
-Use the community edition container to be able to specify the version to use explicitly:
+
+__Note:__  
+[In June 2023 Oracle announced](https://medium.com/graalvm/a-new-graalvm-release-and-new-free-license-4aab483692f5) that with version 23 the distribution is named __Oracle GraalVM__ and distributed under the [GraalVM Free License](https://blogs.oracle.com/cloud-infrastructure/post/graalvm-free-license). This means the previously named __Oracle GraalVM Enterprise__ is now available for free.  
+
+TODO use the new Oracle GraalVM images once they are available
+Use the __Oracle GraalVM__ container image from the [Oracle Container Registry](https://container-registry.oracle.com/ords/f?p=113:10::::::) or alternatively the __GraalVM Community Edition__ container from the [GitHub Container Registry](https://github.com/orgs/graalvm/packages).
+
+For a multi-stage build you first need to choose the GraalVM image for building the native executable. There are native-image container images that can directly be used without the need for further modifications, for example in the [Oracle Container Registry](https://container-registry.oracle.com/ords/f?p=113:10::::::):
 
 ```
-FROM ghcr.io/graalvm/graalvm-ce:ol8-java17-22.2.0 AS build
+FROM container-registry.oracle.com/graalvm/native-image:muslib-ol9-java17-22.3.2 AS build
 ```
 
-In this case you need to install the `native-image` tool additionally in order to be able to build a native image.
-
-
-Alternatively you can also use the native-image container image:
+Or from the [GitHub Container Registry](https://github.com/orgs/graalvm/packages):
 
 ```
-FROM ghcr.io/graalvm/native-image:22.2.0 AS build
+FROM ghcr.io/graalvm/native-image:muslib-ol9-java17-22.3.2 AS build
+```
+__Note:__  
+Using the native-image container image, the ENTRYPOINT is `native-image`, so you need to either pass the right parameters, or override the ENTRYPOINT so the command is called with the approriate parameters in a multi-stage-build.
+
+
+Alternatively you can use the base community edition image for the desired version from the [Oracle Container Registry](https://container-registry.oracle.com/ords/f?p=113:10::::::):
+
+```
+FROM container-registry.oracle.com/graalvm/community:ol8-java17-22.3.2 AS build
 ```
 
-But the documentation says that "using `ghcr.io/graalvm/native-image` you will always get the latest update available for Native Image, the latest OS, the latest Java version, and the latest GraalVM version". This might not be desirable in a production case if the base image might change suddenly.
+Or alternatively the base community edition image from the [GitHub Container Registry](https://github.com/orgs/graalvm/packages):
 
-This repository is using the multi-stage build using the community edition container image to create a statically linked native executable which is then placed in the smallest possible image (e.g. `scratch`).
+```
+FROM ghcr.io/graalvm/graalvm-ce:ol8-java17-22.3.2 AS build
+```
 
-- [GraalVM Community Images](https://www.graalvm.org/22.2/docs/getting-started/container-images/)
+But using the community edition base image you need to install the `native-image` tool in order to be able to build a native image. Additionally you need to install `musl` if the resulting executable should finally be included in an `alpine` or `scratch` image, to get the smallest possible result.
+
+```
+# Set up musl, in order to produce a static image compatible to alpine
+# See 
+# https://github.com/oracle/graal/issues/2824 and 
+# https://github.com/oracle/graal/blob/vm-ce-22.0.0.2/docs/reference-manual/native-image/StaticImages.md
+ARG RESULT_LIB="/musl"
+RUN mkdir ${RESULT_LIB} && \
+    curl -L -o musl.tar.gz https://more.musl.cc/10.2.1/x86_64-linux-musl/x86_64-linux-musl-native.tgz && \
+    tar -xvzf musl.tar.gz -C ${RESULT_LIB} --strip-components 1 && \
+    cp /usr/lib/gcc/x86_64-redhat-linux/8/libstdc++.a ${RESULT_LIB}/lib/
+ENV CC=/musl/bin/gcc
+RUN curl -L -o zlib.tar.gz https://zlib.net/zlib-1.2.13.tar.gz && \
+    mkdir zlib && tar -xvzf zlib.tar.gz -C zlib --strip-components 1 && \
+    cd zlib && ./configure --static --prefix=/musl && \
+    make && make install && \
+    cd / && rm -rf /zlib && rm -f /zlib.tar.gz
+ENV PATH="$PATH:/musl/bin"
+
+# Install native-image
+RUN gu install native-image
+```
+
+This repository is using the multi-stage build using the native-image community edition container image to create a statically linked native executable which is then placed in the smallest possible image (e.g. `scratch`). The Docker files for reference can be found [here](org.fipro.service.app/src/main/docker/graalvm_native_scratch).
+
+Below are some links to use the GraalVM Community Edition from the GitHub Container Registry:
+- [GraalVM Community Images](https://www.graalvm.org/docs/getting-started/container-images/)
 - [GraalVM Community Edition Container Images](https://github.com/graalvm/container)
 - [GraalVM GitHub Container Registry](https://github.com/orgs/graalvm/packages)
-- [Build a Statically Linked or Mostly-Statically Linked Native Executable](https://www.graalvm.org/22.2/reference-manual/native-image/guides/build-static-executables/)
-- [Containerise a Native Executable and Run in a Docker Container](https://www.graalvm.org/22.2/reference-manual/native-image/guides/containerise-native-executable-and-run-in-docker-container/)
+- [Build a Statically Linked or Mostly-Statically Linked Native Executable](https://www.graalvm.org/reference-manual/native-image/guides/build-static-executables/)
+- [Containerise a Native Executable and Run in a Docker Container](https://www.graalvm.org/reference-manual/native-image/guides/containerise-native-executable-and-run-in-docker-container/)
 
 __Note:__
 You can also use a multi-stage build for executing the Maven build on a target architecture container.
@@ -571,7 +613,7 @@ OSGi framework typically use a bundle cache. That cache contains several informa
 Using the Equinox launcher to start an application in a folder structure __without a cache__ add `-Dorg.osgi.framework.storage.clean=onFirstInit`
 
 ```
-java -Dorg.osgi.framework.storage.clean=onFirstInit -jar org.eclipse.osgi-3.17.200.jar
+java -Dorg.osgi.framework.storage.clean=onFirstInit -jar org.eclipse.osgi-3.18.100.jar
 ```
 
 Using the Bnd launcher to start an application as executable jar __with a cache__ add `-Dlaunch.keep=true -Dlaunch.storage.dir=cache`

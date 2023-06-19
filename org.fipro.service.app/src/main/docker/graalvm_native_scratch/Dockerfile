@@ -1,8 +1,6 @@
 #Using ghcr.io/graalvm/native-image you will always get the latest update available for Native Image, the latest OS, the latest Java version, and the latest GraalVM version.
-#ARG IMAGE_NAME=ghcr.io/graalvm/native-image
-#ARG VERSION=22.2.0
-ARG IMAGE_NAME=ghcr.io/graalvm/graalvm-ce
-ARG VERSION=ol8-java17-22.2.0
+ARG IMAGE_NAME=ghcr.io/graalvm/native-image
+ARG VERSION=muslib-ol9-java17-22.3.2
 
 FROM ${IMAGE_NAME}:${VERSION} AS build
 
@@ -10,28 +8,11 @@ COPY /atomos_lib /build/atomos_lib
 COPY /native-image-resources /build/native-image-resources
 
 
-# Set up musl, in order to produce a static image compatible to alpine
-# See 
-# https://github.com/oracle/graal/issues/2824 and 
-# https://github.com/oracle/graal/blob/vm-ce-22.0.0.2/docs/reference-manual/native-image/StaticImages.md
-ARG RESULT_LIB="/musl"
-RUN mkdir ${RESULT_LIB} && \
-    curl -L -o musl.tar.gz https://more.musl.cc/10.2.1/x86_64-linux-musl/x86_64-linux-musl-native.tgz && \
-    tar -xvzf musl.tar.gz -C ${RESULT_LIB} --strip-components 1 && \
-    cp /usr/lib/gcc/x86_64-redhat-linux/8/libstdc++.a ${RESULT_LIB}/lib/
-ENV CC=/musl/bin/gcc
-RUN curl -L -o zlib.tar.gz https://zlib.net/zlib-1.2.13.tar.gz && \
-    mkdir zlib && tar -xvzf zlib.tar.gz -C zlib --strip-components 1 && \
-    cd zlib && ./configure --static --prefix=/musl && \
-    make && make install && \
-    cd / && rm -rf /zlib && rm -f /zlib.tar.gz
-ENV PATH="$PATH:/musl/bin"
-
-
 WORKDIR /build
 
 RUN \
-  gu install native-image && \
+# need to install findutils because find is not available in the slim base image
+  microdnf install -y findutils && \
   dirlist=`find ./atomos_lib -type f -printf '%p:'` && \
   native-image \
 #    -o atomos \
@@ -48,6 +29,8 @@ RUN \
     org.apache.felix.atomos.Atomos \
     atomos
 
+# The default ENTRYPOINT is "native-image", so we override that and call the native-image command with our parameters ourself
+ENTRYPOINT ["bash"]  
 CMD ["bash"]
 
 
