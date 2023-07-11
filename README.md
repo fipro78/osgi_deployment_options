@@ -765,6 +765,9 @@ TBD: maybe use APP4MC Migration to investigate the processing performance of the
 ## Future Investigation: Checkpoint and Restore
 
 - [Instant On Java Cloud Applications with Checkpoint and Restore](https://www.youtube.com/watch?v=E_5MgOYnEpY)
-- [Coordinated Restore at Checkpoint](https://github.com/CRaC/docs)
 - [Liberty InstantOn startup for cloud native Java applications](https://openliberty.io/blog/2022/09/29/instant-on-beta.html)
+- [Coordinated Restore at Checkpoint](https://github.com/CRaC/docs)
+- [Java on CRaC: Superfast JVM Application Startup](https://www.youtube.com/watch?v=bWmuqh6wHgE)
+- [What the CRaC](https://www.youtube.com/watch?v=Y9sEXOGlvoA)
+- [How to Run a Java Application with CRaC in a Docker Container](https://foojay.io/today/how-to-run-a-java-application-with-crac-in-a-docker-container/)
 

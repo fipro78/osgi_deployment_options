@@ -1212,5 +1212,47 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>azul_crac</id>
+      <build>
+        <plugins>
+          <!-- build docker images -->
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+              <images>
+                <image>
+                  <name>osgi-deployment-folder-%a:17_azul_crac</name>
+                  <alias>folder_based_crac_17</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/folder_based_crac/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/folder_based</contextDir>
+                  </build>
+                </image>
+                <image>
+                  <name>osgi-deployment-executable-%a:17_azul_crac</name>
+                  <alias>executable_crac_17</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/executable_crac/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/executable</contextDir>
+                    <args>
+                      <EXECUTABLE_JAR>equinox-app.jar</EXECUTABLE_JAR>
+                    </args>
+                  </build>
+                </image>
+                <!--
+                  TODO create a multi stage docker build to create a container with checkpoint
+                  TODO create examples to create a jre via link 
+                -->
+                <!--
+                -->
+              </images>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>
