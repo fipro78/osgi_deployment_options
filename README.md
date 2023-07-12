@@ -762,12 +762,57 @@ The current results only investigate container size vs. startup performance. The
 
 TBD: maybe use APP4MC Migration to investigate the processing performance of the deployment variants.
 
-## Future Investigation: Checkpoint and Restore
+## Future Investigation: Checkpoint/Restore in Userspace (CRIU)
 
-- [Instant On Java Cloud Applications with Checkpoint and Restore](https://www.youtube.com/watch?v=E_5MgOYnEpY)
-- [Liberty InstantOn startup for cloud native Java applications](https://openliberty.io/blog/2022/09/29/instant-on-beta.html)
+Get AOT like startup performance with JIT runtime performance and behavior using [CRIU](https://criu.org/Main_Page).
+
+There are two variants available:
+
+### OpenJDK CRaC
+
+Azul Systems developed CRaC in OpenJDK. They also provide a Zulu JDK with CRaC support for Linux since April 2023.
+
+To create checkpoint data:
+- start the application with the ```-XX:CRaCCheckpointTo=<path>``` parameter
+- create the checkpoint 
+  - programmatically via ```jdk.crac.Core``` API
+  - manually via ```jcmd <PID> JDK.checkpoint``` command in a separate shell process
+
+
+To restore an application from a checkpoint use the parameter ```-XX:CRaCRestoreFrom=<path>```
+
+Current state July 2023:
+- Only available for Linux, but no Alpine (musl)
+- Building a custom JRE (jlink) currently not easily possible  
+(need to manually copy criu to the system)
+- Containers with CRaC support not available out-of-the-box
+- No support for graphical user interfaces (actually not really the scope)
+- As OSGi opens the nested jars at runtime, the checkpoint creation fails with exceptions
+
+Further information:
 - [Coordinated Restore at Checkpoint](https://github.com/CRaC/docs)
+- [Azul Coordinated Restore at Checkpoint](https://www.azul.com/products/components/crac/)
 - [Java on CRaC: Superfast JVM Application Startup](https://www.youtube.com/watch?v=bWmuqh6wHgE)
 - [What the CRaC](https://www.youtube.com/watch?v=Y9sEXOGlvoA)
 - [How to Run a Java Application with CRaC in a Docker Container](https://foojay.io/today/how-to-run-a-java-application-with-crac-in-a-docker-container/)
+
+
+### OpenJ9 CRIU / Open Liberty InstantOn
+
+CRIU support in OpenJ9 is prebuilt in IBM Semeru containers. Open Liberty uses this feature and provides containers with the InstantOn feature for Liberty server applications.
+
+Enable the CRIU support in OpenJ9 via the ```-XX:+EnableCRIUSupport``` parameter.
+
+Create checkpoint data via ```org.eclipse.openj9.criu.CRIUSupport``` API
+
+Current state July 2023:
+- Only Linux, no Alpine as IBM Semeru containers are not available for Alpine
+- Not clear if building a custom JRE with jlink is possible
+- Checkpoint creation is only possible via API, not via shell command
+
+Further information:
+- [OpenJ9 CRIU support](https://eclipse.dev/openj9/docs/criusupport/)
+- [Instant On Java Cloud Applications with Checkpoint and Restore](https://www.youtube.com/watch?v=E_5MgOYnEpY)
+- [Liberty InstantOn startup for cloud native Java applications](https://openliberty.io/blog/2022/09/29/instant-on-beta.html)
+- [Faster startup for containerized applications with Open Liberty InstantOn](https://openliberty.io/docs/latest/instanton.html)
 
