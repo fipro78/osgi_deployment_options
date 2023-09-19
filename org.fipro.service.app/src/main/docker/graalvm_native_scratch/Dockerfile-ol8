@@ -1,5 +1,6 @@
-ARG IMAGE_NAME=ghcr.io/graalvm/graalvm-ce
-ARG VERSION=ol8-java17-22.3.2
+ARG IMAGE_NAME=container-registry.oracle.com/graalvm/jdk
+ARG VERSION=17.0.8-ol8
+# ARG VERSION=20.0.2-ol8
 
 FROM ${IMAGE_NAME}:${VERSION} AS build
 

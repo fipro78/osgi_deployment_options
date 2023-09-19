@@ -534,7 +534,7 @@ Bundle-SymbolicName: ${project.groupId}.${project.artifactId}
         <plugin>
           <groupId>io.fabric8</groupId>
           <artifactId>docker-maven-plugin</artifactId>
-          <version>0.43.0</version>
+          <version>0.43.4</version>
         </plugin>
 
       </plugins>

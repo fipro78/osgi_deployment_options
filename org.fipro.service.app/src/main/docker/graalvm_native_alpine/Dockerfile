@@ -1,6 +1,6 @@
-#Using ghcr.io/graalvm/native-image you will always get the latest update available for Native Image, the latest OS, the latest Java version, and the latest GraalVM version.
-ARG IMAGE_NAME=ghcr.io/graalvm/native-image
-ARG VERSION=muslib-ol9-java17-22.3.2
+ARG IMAGE_NAME=container-registry.oracle.com/graalvm/native-image
+ARG VERSION=17.0.8-muslib-ol9
+# ARG VERSION=20.0.2-muslib-ol9
 
 FROM ${IMAGE_NAME}:${VERSION} AS build
 

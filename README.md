@@ -318,37 +318,36 @@ Alternatively you can use a multi-stage build that uses the official GraalVM con
 __Note:__  
 [In June 2023 Oracle announced](https://medium.com/graalvm/a-new-graalvm-release-and-new-free-license-4aab483692f5) that with version 23 the distribution is named __Oracle GraalVM__ and distributed under the [GraalVM Free License](https://blogs.oracle.com/cloud-infrastructure/post/graalvm-free-license). This means the previously named __Oracle GraalVM Enterprise__ is now available for free.  
 
-TODO use the new Oracle GraalVM images once they are available
-Use the __Oracle GraalVM__ container image from the [Oracle Container Registry](https://container-registry.oracle.com/ords/f?p=113:10::::::) or alternatively the __GraalVM Community Edition__ container from the [GitHub Container Registry](https://github.com/orgs/graalvm/packages).
+Use the __Oracle GraalVM__ container image from the [Oracle Container Registry](https://container-registry.oracle.com/ords/f?p=113:10::::::) or alternatively the __GraalVM Community Edition__ container from the [GitHub Container Registry](https://github.com/orgs/graalvm/packages). But the most current version is only published via the Oracle Container Registry.
 
 For a multi-stage build you first need to choose the GraalVM image for building the native executable. There are native-image container images that can directly be used without the need for further modifications, for example in the [Oracle Container Registry](https://container-registry.oracle.com/ords/f?p=113:10::::::):
 
 ```
-FROM container-registry.oracle.com/graalvm/native-image:muslib-ol9-java17-22.3.2 AS build
+FROM container-registry.oracle.com/graalvm/native-image:17.0.8-muslib-ol9 AS build
 ```
 
 Or from the [GitHub Container Registry](https://github.com/orgs/graalvm/packages):
 
 ```
-FROM ghcr.io/graalvm/native-image:muslib-ol9-java17-22.3.2 AS build
+FROM ghcr.io/graalvm/native-image:muslib-ol9-java17-22.3.3 AS build
 ```
 __Note:__  
 Using the native-image container image, the ENTRYPOINT is `native-image`, so you need to either pass the right parameters, or override the ENTRYPOINT so the command is called with the approriate parameters in a multi-stage-build.
 
 
-Alternatively you can use the base community edition image for the desired version from the [Oracle Container Registry](https://container-registry.oracle.com/ords/f?p=113:10::::::):
+Alternatively you can use the jdk image for the desired version from the [Oracle Container Registry](https://container-registry.oracle.com/ords/f?p=113:10::::::):
 
 ```
-FROM container-registry.oracle.com/graalvm/community:ol8-java17-22.3.2 AS build
+FROM container-registry.oracle.com/graalvm/jdk:17.0.8-muslib-ol9 AS build
 ```
 
 Or alternatively the base community edition image from the [GitHub Container Registry](https://github.com/orgs/graalvm/packages):
 
 ```
-FROM ghcr.io/graalvm/graalvm-ce:ol8-java17-22.3.2 AS build
+FROM ghcr.io/graalvm/graalvm-ce:ol8-java17-22.3.3 AS build
 ```
 
-But using the community edition base image you need to install the `native-image` tool in order to be able to build a native image. Additionally you need to install `musl` if the resulting executable should finally be included in an `alpine` or `scratch` image, to get the smallest possible result.
+But using the jdk image or the community edition base image you need to install the `native-image` tool in order to be able to build a native image. Additionally you need to install `musl` if the resulting executable should finally be included in an `alpine` or `scratch` image, to get the smallest possible result.
 
 ```
 # Set up musl, in order to produce a static image compatible to alpine
@@ -381,7 +380,7 @@ Below are some links to use the GraalVM Community Edition from the GitHub Contai
 - [Build a Statically Linked or Mostly-Statically Linked Native Executable](https://www.graalvm.org/reference-manual/native-image/guides/build-static-executables/)
 - [Containerise a Native Executable and Run in a Docker Container](https://www.graalvm.org/reference-manual/native-image/guides/containerise-native-executable-and-run-in-docker-container/)
 
-__Note:__
+__Note:__  
 You can also use a multi-stage build for executing the Maven build on a target architecture container.
 
 __Note:__  
