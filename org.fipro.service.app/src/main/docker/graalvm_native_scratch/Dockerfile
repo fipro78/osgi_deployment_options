@@ -1,6 +1,5 @@
 ARG IMAGE_NAME=container-registry.oracle.com/graalvm/native-image
-ARG VERSION=17.0.8-muslib-ol9
-# ARG VERSION=20.0.2-muslib-ol9
+ARG VERSION=21-muslib-ol9
 
 FROM ${IMAGE_NAME}:${VERSION} AS build
 

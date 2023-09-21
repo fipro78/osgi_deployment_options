@@ -25,6 +25,10 @@
 
     <!--  Declarative Services  -->
     <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.component</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.scr</artifactId>
     </dependency>
@@ -545,13 +549,130 @@
                   <run>
                     <dependsOn>
                       <container>benchmark_service</container>
-                      <container>benchmark_jlink_atomos_compressed_17</container>
                     </dependsOn>
                     <network>
                       <mode>container</mode>
                       <name>benchmark_service</name>
                     </network>
                     <env>
+                      <BENCHMARK_SUFFIX>_17</BENCHMARK_SUFFIX>
+                      <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
+                    </env>
+                    <cmd>/app/start_benchmark.sh</cmd>
+                    <wait>
+                      <time>${container.timeout}</time>
+                      <exit>0</exit>
+                    </wait>
+                  </run>
+                </image>
+              </images>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>graalvm_21</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+              <images combine.children="append">
+                <image>
+                  <name>osgi-deployment-graalvm:21-alpine</name>
+                  <alias>benchmark_graalvm_atomos_21</alias>
+                  
+                  <run>
+                    <dependsOn>
+                      <container>benchmark_service</container>
+                    </dependsOn>
+                    <network>
+                      <mode>container</mode>
+                      <name>benchmark_service</name>
+                    </network>
+                    <env>
+                      <BENCHMARK_SUFFIX>_21</BENCHMARK_SUFFIX>
+                      <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
+                    </env>
+                    <cmd>/app/start_benchmark.sh</cmd>
+                    <wait>
+                      <time>${container.timeout}</time>
+                      <exit>0</exit>
+                    </wait>
+                  </run>
+                </image>
+              </images>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>graalvm_ce_17</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+              <images combine.children="append">
+                <image>
+                  <name>osgi-deployment-graalvm-ce:17-alpine</name>
+                  <alias>benchmark_graalvm_ce_atomos_17</alias>
+                  
+                  <run>
+                    <dependsOn>
+                      <container>benchmark_service</container>
+                    </dependsOn>
+                    <network>
+                      <mode>container</mode>
+                      <name>benchmark_service</name>
+                    </network>
+                    <env>
+                      <BENCHMARK_SUFFIX>_CE_17</BENCHMARK_SUFFIX>
+                      <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
+                    </env>
+                    <cmd>/app/start_benchmark.sh</cmd>
+                    <wait>
+                      <time>${container.timeout}</time>
+                      <exit>0</exit>
+                    </wait>
+                  </run>
+                </image>
+              </images>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>graalvm_ce_21</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+              <images combine.children="append">
+                <image>
+                  <name>osgi-deployment-graalvm-ce:21-alpine</name>
+                  <alias>benchmark_graalvm_ce_atomos_21</alias>
+                  
+                  <run>
+                    <dependsOn>
+                      <container>benchmark_service</container>
+                    </dependsOn>
+                    <network>
+                      <mode>container</mode>
+                      <name>benchmark_service</name>
+                    </network>
+                    <env>
+                      <BENCHMARK_SUFFIX>_CE_21</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
                     <cmd>/app/start_benchmark.sh</cmd>

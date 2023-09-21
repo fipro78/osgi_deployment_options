@@ -86,7 +86,7 @@ This is the default variant in which multiple JARs / OSGi bundles are located in
 As the OSGi framework is doing the loading of bundles and classes, the application can be started via:
 
 ```
-java -jar org.eclipse.osgi-3.18.100.jar
+java -jar org.eclipse.osgi-3.18.500.jar
 ```
 
 This deployment variant requires a Java Runtime to be installed on the host system.
@@ -323,13 +323,13 @@ Use the __Oracle GraalVM__ container image from the [Oracle Container Registry](
 For a multi-stage build you first need to choose the GraalVM image for building the native executable. There are native-image container images that can directly be used without the need for further modifications, for example in the [Oracle Container Registry](https://container-registry.oracle.com/ords/f?p=113:10::::::):
 
 ```
-FROM container-registry.oracle.com/graalvm/native-image:17.0.8-muslib-ol9 AS build
+FROM container-registry.oracle.com/graalvm/native-image:21-muslib-ol9 AS build
 ```
 
 Or from the [GitHub Container Registry](https://github.com/orgs/graalvm/packages):
 
 ```
-FROM ghcr.io/graalvm/native-image:muslib-ol9-java17-22.3.3 AS build
+FROM ghcr.io/graalvm/native-image-community:21-muslib-ol9 AS build
 ```
 __Note:__  
 Using the native-image container image, the ENTRYPOINT is `native-image`, so you need to either pass the right parameters, or override the ENTRYPOINT so the command is called with the approriate parameters in a multi-stage-build.
@@ -338,13 +338,13 @@ Using the native-image container image, the ENTRYPOINT is `native-image`, so you
 Alternatively you can use the jdk image for the desired version from the [Oracle Container Registry](https://container-registry.oracle.com/ords/f?p=113:10::::::):
 
 ```
-FROM container-registry.oracle.com/graalvm/jdk:17.0.8-muslib-ol9 AS build
+FROM container-registry.oracle.com/graalvm/jdk:21-muslib-ol9 AS build
 ```
 
 Or alternatively the base community edition image from the [GitHub Container Registry](https://github.com/orgs/graalvm/packages):
 
 ```
-FROM ghcr.io/graalvm/graalvm-ce:ol8-java17-22.3.3 AS build
+FROM ghcr.io/graalvm/jdk-community:21-ol9 AS build
 ```
 
 But using the jdk image or the community edition base image you need to install the `native-image` tool in order to be able to build a native image. Additionally you need to install `musl` if the resulting executable should finally be included in an `alpine` or `scratch` image, to get the smallest possible result.
@@ -497,12 +497,15 @@ mvn clean verify
 
 This will by default build the bundles, the application and create the different Docker images based on Eclipse Temurin 17. The following profiles are available to build different variants:
 
+- temurin_11
 - temurin_17
 - graalvm_17
-- temurin_11
+- graalvm_21
+- graalvm_ce_17
+- graalvm_ce_21
 - semeru_17
 
-To build the Temurin 17 and the GraalVM 17 containers at once, execute the build by specifying the profiles like this:
+To build the Temurin 17 and the Oracle GraalVM 17 containers at once, execute the build by specifying the profiles like this:
 
 ```
 mvn clean verify -Ptemurin_17,graalvm_17
@@ -612,7 +615,7 @@ OSGi framework typically use a bundle cache. That cache contains several informa
 Using the Equinox launcher to start an application in a folder structure __without a cache__ add `-Dorg.osgi.framework.storage.clean=onFirstInit`
 
 ```
-java -Dorg.osgi.framework.storage.clean=onFirstInit -jar org.eclipse.osgi-3.18.100.jar
+java -Dorg.osgi.framework.storage.clean=onFirstInit -jar org.eclipse.osgi-3.18.500.jar
 ```
 
 Using the Bnd launcher to start an application as executable jar __with a cache__ add `-Dlaunch.keep=true -Dlaunch.storage.dir=cache`
@@ -735,14 +738,41 @@ __Note:__
 The combination of using Atomos with the modulepath and the OpenJ9 `-Xshareclasses` option leads to an `IllegalAccessError`. See https://github.com/eclipse-equinox/equinox/issues/158 for further details.  
 Until a fix is included in Equinox, this can be fixed locally by adding `--add-reads org.eclipse.osgi=openj9.sharedclasses`. This increases the class cache size up to 80 MB.
 
-### GraalVM 17
+### GraalVM Community 17
 
 For the GraalVM we only have benchmark results inside the container with an Alpine base image. The scratch image does not have shell scripting support.  
 
 | Deployment (OSGi Connect)              | Image Size | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |        ---:|                  ---:|           ---:|           ---:|
-| graalvm:17                             | \~  38 MB  |            \~  46 MB |             - |             - |
-| graalvm:17-alpine                      | \~  43 MB  |            \~  54 MB |      \~ 39 ms |      \~ 29 ms |
+| graalvm-ce:17                             | \~  41 MB  |            \~  50 MB |             - |             - |
+| graalvm-ce:17-alpine                      | \~  46 MB  |            \~  58 MB |      \~ 58 ms |      \~ 63 ms |
+
+### GraalVM Community 21
+
+For the GraalVM we only have benchmark results inside the container with an Alpine base image. The scratch image does not have shell scripting support.  
+
+| Deployment (OSGi Connect)              | Image Size | Benchmark Image Size | Startup clean | Startup cache |
+| :---                            |        ---:|                  ---:|           ---:|           ---:|
+| graalvm-ce:21                             | \~  42 MB  |            \~  53 MB |             - |             - |
+| graalvm-ce:21-alpine                      | \~  48 MB  |            \~  60 MB |      \~ 62 ms |      \~ 38 ms |
+
+### Oracle GraalVM 17
+
+For the GraalVM we only have benchmark results inside the container with an Alpine base image. The scratch image does not have shell scripting support.  
+
+| Deployment (OSGi Connect)              | Image Size | Benchmark Image Size | Startup clean | Startup cache |
+| :---                            |        ---:|                  ---:|           ---:|           ---:|
+| graalvm:17                             | \~  47 MB  |            \~  58 MB |             - |             - |
+| graalvm:17-alpine                      | \~  52 MB  |            \~  65 MB |      \~ 52 ms |      \~ 45 ms |
+
+### Oracle GraalVM 21
+
+For the GraalVM we only have benchmark results inside the container with an Alpine base image. The scratch image does not have shell scripting support.  
+
+| Deployment (OSGi Connect)              | Image Size | Benchmark Image Size | Startup clean | Startup cache |
+| :---                            |        ---:|                  ---:|           ---:|           ---:|
+| graalvm:21                             | \~  46 MB  |            \~  57 MB |             - |             - |
+| graalvm:21-alpine                      | \~  52 MB  |            \~  64 MB |      \~ 49 ms |      \~ 29 ms |
 
 ### Observations
 

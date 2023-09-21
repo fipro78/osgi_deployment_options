@@ -7,4 +7,4 @@ IF "%3"=="clean" (SET clean=-Dorg.osgi.framework.storage.clean=onFirstInit)
 
 FOR /F "delims=" %%A IN ('powershell.exe -NoLogo -NoProfile -Command "[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()"') DO (SET "THETIME=%%~A")
 
-java -Dbenchmark.appid=%1 -Dbenchmark.executionid=%2 -Dbenchmark.starttime=%THETIME% %clean% -jar org.eclipse.osgi-3.18.100.jar -console
+java -Dbenchmark.appid=%1 -Dbenchmark.executionid=%2 -Dbenchmark.starttime=%THETIME% %clean% -jar org.eclipse.osgi-3.18.500.jar -console

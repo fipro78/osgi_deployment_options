@@ -239,7 +239,7 @@
                 <resource>
                   <directory>${project.build.directory}/deps</directory>
                   <includes>
-                    <include>org.eclipse.osgi-3.18.100.jar</include>
+                    <include>org.eclipse.osgi-3.18.500.jar</include>
                   </includes>
                 </resource>
               </resources>
@@ -661,7 +661,7 @@
         <artifactId>docker-maven-plugin</artifactId>
         <extensions>true</extensions>
         <configuration>
-          <images>
+          <images combine.children="append">
           </images>
           <!-- use the image alias as container name on start -->
           <containerNamePattern>%a</containerNamePattern>
@@ -698,7 +698,7 @@
             <artifactId>docker-maven-plugin</artifactId>
             <extensions>true</extensions>
             <configuration>
-              <images combine.children="append">
+              <images>
                 <image>
                   <name>osgi-deployment-folder-%a:17_temurin</name>
                   <alias>folder_based_17</alias>
@@ -838,6 +838,9 @@
                   <build>
                     <dockerFile>${project.basedir}/src/main/docker/graalvm_native_scratch/Dockerfile</dockerFile>
                     <contextDir>${project.build.directory}/deployment/atomos_graalvm</contextDir>
+                    <args>
+                      <VERSION>17-muslib-ol9</VERSION>
+                    </args>
                   </build>
                 </image>
                 <image>
@@ -846,6 +849,130 @@
                   <build>
                     <dockerFile>${project.basedir}/src/main/docker/graalvm_native_alpine/Dockerfile</dockerFile>
                     <contextDir>${project.build.directory}/deployment/atomos_graalvm</contextDir>
+                    <args>
+                      <VERSION>17-muslib-ol9</VERSION>
+                    </args>
+                  </build>
+                </image>
+                <!--
+                -->
+              </images>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>graalvm_21</id>
+      <build>
+        <plugins>
+          <!-- build docker images -->
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+              <images>
+                <image>
+                  <name>osgi-deployment-graalvm:21</name>
+                  <alias>graalvm_21</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/graalvm_native_scratch/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/atomos_graalvm</contextDir>
+                  </build>
+                </image>
+                <image>
+                  <name>osgi-deployment-graalvm:21-alpine</name>
+                  <alias>graalvm_21_alpine</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/graalvm_native_alpine/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/atomos_graalvm</contextDir>
+                  </build>
+                </image>
+                <!--
+                -->
+              </images>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>graalvm_ce_17</id>
+      <build>
+        <plugins>
+          <!-- build docker images -->
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+              <images>
+                <image>
+                  <name>osgi-deployment-graalvm-ce:17</name>
+                  <alias>graalvm_ce_17</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/graalvm_native_scratch/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/atomos_graalvm</contextDir>
+                    <args>
+                      <IMAGE_NAME>ghcr.io/graalvm/native-image-community</IMAGE_NAME>
+                      <VERSION>17-muslib-ol9</VERSION>
+                    </args>
+                  </build>
+                </image>
+                <image>
+                  <name>osgi-deployment-graalvm-ce:17-alpine</name>
+                  <alias>graalvm_ce_17_alpine</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/graalvm_native_alpine/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/atomos_graalvm</contextDir>
+                    <args>
+                      <IMAGE_NAME>ghcr.io/graalvm/native-image-community</IMAGE_NAME>
+                      <VERSION>17-muslib-ol9</VERSION>
+                    </args>
+                  </build>
+                </image>
+                <!--
+                -->
+              </images>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>graalvm_ce_21</id>
+      <build>
+        <plugins>
+          <!-- build docker images -->
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+              <images>
+                <image>
+                  <name>osgi-deployment-graalvm-ce:21</name>
+                  <alias>graalvm_ce_21</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/graalvm_native_scratch/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/atomos_graalvm</contextDir>
+                    <args>
+                      <IMAGE_NAME>ghcr.io/graalvm/native-image-community</IMAGE_NAME>
+                      <VERSION>21-muslib-ol9</VERSION>
+                    </args>
+                  </build>
+                </image>
+                <image>
+                  <name>osgi-deployment-graalvm-ce:21-alpine</name>
+                  <alias>graalvm_ce_21_alpine</alias>
+                  <build>
+                    <dockerFile>${project.basedir}/src/main/docker/graalvm_native_alpine/Dockerfile</dockerFile>
+                    <contextDir>${project.build.directory}/deployment/atomos_graalvm</contextDir>
+                    <args>
+                      <IMAGE_NAME>ghcr.io/graalvm/native-image-community</IMAGE_NAME>
+                      <VERSION>21-muslib-ol9</VERSION>
+                    </args>
                   </build>
                 </image>
                 <!--
