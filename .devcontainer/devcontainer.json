@@ -1,0 +1,62 @@
+{
+    "name": "osgi-deployment-options",
+
+    "build": {
+        "dockerfile": "Dockerfile",
+        "args": {
+            // Update the VARIANT arg to pick a Java version: 11, 17
+            // Append -bullseye or -buster to pin to an OS version.
+            // Use the -bullseye variants on local arm64/Apple Silicon.
+            "VARIANT": "17"
+        }
+    },
+
+    // according to https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker
+    "runArgs": ["--init"],
+    "mounts": ["source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"],
+
+    // according to https://github.com/devcontainers/images/tree/main/src/java
+    "features": {
+        "ghcr.io/devcontainers/features/java:1": {
+            "version": "17",
+			// use the Semeru Runtime to be able to implement CRIU support bundle
+			"jdkDistro": "sem",
+            "installGradle": "false",
+            "installMaven": "true",
+            "mavenVersion": "3.9.4"
+        },
+        "ghcr.io/devcontainers/features/git:1": {}
+    },
+
+    "customizations": {
+        "vscode": {
+            
+            // Set *default* container specific settings.json values on container create.
+            "settings": {},
+            
+            // Add the IDs of extensions you want installed when the container is created.
+            "extensions": [
+                "ms-azuretools.vscode-docker",
+                "vscjava.vscode-java-pack",
+                "maptz.camelcasenavigation",
+                "alphabotsec.vscode-eclipse-keybindings",
+                "spmeesseman.vscode-taskexplorer",
+                "yzhang.markdown-all-in-one"
+            ]
+        }
+    },
+
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    "forwardPorts": [8080],
+    
+    // Connect as root instead of a custom user https://aka.ms/vscode-remote/containers/non-root.
+    // Necessary to get the maven build working
+    "remoteUser": "root"
+
+    // Use 'postCreateCommand' to run commands after the container is created.
+    // Happens after updateContentCommand and once the dev container has been assigned to a user for the first time.
+    // "postCreateCommand": "export OPENJ9_HOME=$JAVA_HOME"
+
+    // Runs each time the container is successfully started
+    // "postStartCommand": "export OPENJ9_HOME=\"$JAVA_HOME\""
+}

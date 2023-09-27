@@ -667,6 +667,17 @@ Bundle-SymbolicName: ${project.groupId}.${project.artifactId}
         <module>org.fipro.osgi.benchmark.app</module>
       </modules>
     </profile>
-
+    <profile>
+      <id>criu</id>
+      <modules>
+        <module>org.fipro.service.api</module>
+        <module>org.fipro.service.impl</module>
+        <module>org.fipro.service.eventhandler</module>
+        <module>org.fipro.service.configurable</module>
+        <module>org.fipro.service.command</module>
+        <module>org.fipro.osgi.benchmark.criu</module>
+        <module>org.fipro.service.app.criu</module>
+      </modules>
+    </profile>
   </profiles>
 </project>
