@@ -89,16 +89,16 @@ under the License.
    | specification in this list marked as active will be used.
    |-->
   <proxies>
+  <!--
     <proxy>
       <id>px</id>
       <active>true</active>
       <protocol>http</protocol>
-      <!-- <host>host.docker.internal</host>
-      <port>3128</port> -->
       <host>${env.PROXY_HOST}</host>
       <port>3128</port>
-      <nonProxyHosts>${env.PROXY_HOST},localhost,127.0.0.1,*.bosch.com</nonProxyHosts>
+      <nonProxyHosts>${env.PROXY_HOST},localhost,127.0.0.1</nonProxyHosts>
     </proxy>
+  -->
   </proxies>
 
   <!-- servers
@@ -127,8 +127,6 @@ under the License.
       <passphrase>optional; leave empty if not used.</passphrase>
     </server>
     -->
-    <!-- Local_Build_Test     FPMvfyaXfz3z7EdvRUux -->
-    <!-- Local_Build         glpat-xy558WsEoS89aYyC7UNL -->
   </servers>
 
   <!-- mirrors

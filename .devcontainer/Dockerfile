@@ -2,16 +2,16 @@ ARG VARIANT="17"
 
 FROM mcr.microsoft.com/vscode/devcontainers/java:${VARIANT}
 
-ARG PROXY_HOST=host.docker.internal
-ARG PROXY_PORT=3128
+# ARG PROXY_HOST=host.docker.internal
+# ARG PROXY_PORT=3128
 
-ENV http_proxy="http://${PROXY_HOST}:${PROXY_PORT}"
-ENV https_proxy=${http_proxy}
+# ENV http_proxy="http://${PROXY_HOST}:${PROXY_PORT}"
+# ENV https_proxy=${http_proxy}
 
-ENV PROXY_HOST=${PROXY_HOST}
-ENV PROXY_PORT=${PROXY_PORT}
+# ENV PROXY_HOST=${PROXY_HOST}
+# ENV PROXY_PORT=${PROXY_PORT}
 
-COPY ./settings.xml /root/.m2/settings.xml
+# COPY ./settings.xml /root/.m2/settings.xml
 
 RUN echo 'alias ll="ls -l"' >> ~/.bashrc
 
