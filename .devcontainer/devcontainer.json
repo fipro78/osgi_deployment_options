@@ -19,8 +19,8 @@
     "features": {
         "ghcr.io/devcontainers/features/java:1": {
             "version": "17",
-			// use the Semeru Runtime to be able to implement CRIU support bundle
-			"jdkDistro": "sem",
+            // use the Semeru Runtime to be able to implement CRIU support bundle
+            "jdkDistro": "sem",
             "installGradle": "false",
             "installMaven": "true",
             "mavenVersion": "3.9.4"

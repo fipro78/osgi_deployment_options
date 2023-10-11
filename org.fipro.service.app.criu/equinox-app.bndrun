@@ -11,6 +11,8 @@ index: target/index.xml;name="equinox-app"
 -runfw: org.eclipse.osgi
 -runee: JavaSE-17
 -runsystemcapabilities: ${native_capability}
+-runsystempackages: \
+	org.eclipse.openj9.criu
 
 -resolve.effective: resolve, active
 

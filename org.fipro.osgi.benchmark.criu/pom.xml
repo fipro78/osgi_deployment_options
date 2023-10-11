@@ -32,13 +32,16 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.11.0</version>
         <configuration>
+          <compilerId>eclipse</compilerId>
           <release>${java.version}</release>
-		      <!-- Use an OpenJ9 for compilation because of the CRIUSupport API usage -->
-          <compilerArgs>
-            <arg>--add-modules</arg>
-            <arg>openj9.criu</arg>
-          </compilerArgs>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-compiler-eclipse</artifactId>
+            <version>2.13.0</version>
+          </dependency>
+        </dependencies>
       </plugin>
 
       <plugin>

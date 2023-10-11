@@ -6,7 +6,7 @@
     <version>1.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>app.criu</artifactId>
+  <artifactId>app_criu</artifactId>
 
   <dependencies>
 
@@ -260,24 +260,6 @@
               </resources>
             </configuration>
           </execution>
-          <execution>
-            <id>copy-init-scc</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/folder_based/app</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources</directory>
-                  <includes>
-                    <include>init_scc_size.sh</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
 
           <!-- copy executable jar in docker build context folder -->
           <execution>
@@ -324,24 +306,6 @@
               <resources>
                 <resource>
                   <directory>src/main/resources/etc</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-executable-init-scc</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/executable</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources</directory>
-                  <includes>
-                    <include>init_scc_size.sh</include>
-                  </includes>
                 </resource>
               </resources>
             </configuration>
@@ -395,24 +359,6 @@
               <resources>
                 <resource>
                   <directory>src/main/resources/etc</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-executable-jlink-init-scc</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/jlink</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources</directory>
-                  <includes>
-                    <include>init_scc_size.sh</include>
-                  </includes>
                 </resource>
               </resources>
             </configuration>
@@ -472,61 +418,6 @@
               </resources>
             </configuration>
           </execution>
-          <execution>
-            <id>copy-atomos-init-scc</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/folder_based_atomos/app</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources</directory>
-                  <includes>
-                    <include>init_scc_size.sh</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-
-          <!-- copy executable atomos jar in docker build context folder -->
-          <!-- Bnd created executable jar with Atomos is not working: https://github.com/bndtools/bnd/issues/5243
-          <execution>
-            <id>copy-executable-atomos</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/executable_atomos</outputDirectory>
-              <resources>          
-                <resource>
-                  <directory>${project.build.directory}</directory>
-                  <includes>
-                    <include>atomos-equinox-app.jar</include>
-                  </includes>
-                </resource>
-              </resources>              
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-executable-etc-atomos</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/executable_atomos/etc</outputDirectory>
-              <resources>          
-                <resource>
-                  <directory>src/main/resources/etc</directory>
-                </resource>
-              </resources>        
-            </configuration>            
-          </execution>
-          -->
 
           <!-- copy executable atomos jar and configuration in docker build context folder for jlink -->
           <execution>
@@ -580,24 +471,6 @@
               </resources>
             </configuration>
           </execution>
-          <execution>
-            <id>copy-executable-jlink-atomos-init-scc</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/jlink_atomos</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources</directory>
-                  <includes>
-                    <include>init_scc_size.sh</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
       
@@ -630,8 +503,8 @@
                 <dockerFile>${project.basedir}/src/main/docker/executable_debian/Dockerfile</dockerFile>
                 <contextDir>${project.build.directory}/deployment/executable</contextDir>
                 <args>
-                  <IMAGE_NAME>ibm-semeru-runtimes</IMAGE_NAME>
-                  <VERSION>open-17-jre-jammy</VERSION>
+                  <IMAGE_NAME>icr.io/appcafe/ibm-semeru-runtimes</IMAGE_NAME>
+                  <VERSION>open-17-jre-ubi9</VERSION>
                   <EXECUTABLE_JAR>equinox-app.jar</EXECUTABLE_JAR>
                   <JAVA_OPTS_EXTRA>-XX:+EnableCRIUSupport</JAVA_OPTS_EXTRA>
                 </args>
