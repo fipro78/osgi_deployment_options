@@ -665,7 +665,7 @@ The following tables show the results for the created image sizes and the averag
 
 | Deployment (OSGi Connect)       | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |                  ---:|           ---:|           ---:|
-| folder-atomos-app:11_temurin<br>classpath<br>modulepath           |            \~ 194 MB |     <br>\~ 1235 ms<br>\~  958 ms |     <br>\~ 1211 ms<br>\~ 944 ms |
+| folder-atomos-app:11_temurin<br>classpath<br>modulepath           |            \~ 194 MB |     <br>\~ 1275 ms<br>\~  1204 ms |     <br>\~ 988 ms<br>\~ 1020 ms |
 | jlink-atomos-app:11_temurin            |            \~  87 MB |    \~ 1293 ms |    \~ 1308 ms |
 | jlink-atomos-compressed-app:11_temurin |            \~  62 MB |    \~ 1441 ms |    \~ 1442 ms |
 
@@ -681,7 +681,7 @@ The following tables show the results for the created image sizes and the averag
 
 | Deployment (OSGi Connect)              | Image Size | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |        ---:|                  ---:|           ---:|           ---:|
-| folder-atomos-app:17_temurin<br>classpath<br>modulepath           | \~ 169 MB  |            \~ 171 MB |     <br>\~ 1479 ms<br>\~  960 ms |     <br>\~ 1450 ms<br>\~ 1072 ms |
+| folder-atomos-app:17_temurin<br>classpath<br>modulepath           | \~ 169 MB  |            \~ 171 MB |     <br>\~ 1479 ms<br>\~  1450 ms |     <br>\~ 960 ms<br>\~ 1072 ms |
 | jlink-atomos-app:17_temurin            | \~  78 MB  |            \~  81 MB |    \~ 1394 ms |    \~ 1350 ms |
 | jlink-atomos-compressed-app:17_temurin | \~  56 MB  |            \~  58 MB |    \~ 1526 ms |    \~ 1528 ms |
 
@@ -697,7 +697,7 @@ The following tables show the results for the created image sizes and the averag
 
 | Deployment (OSGi Connect)       | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |                  ---:|           ---:|           ---:|
-| folder-atomos-app:11_temurin<br>classpath<br>modulepath           |            \~ 159 MB |     <br>\~ 1611 ms<br>\~ 1098 ms |     <br>\~ 1494 ms<br>\~ 1163 ms |
+| folder-atomos-app:11_temurin<br>classpath<br>modulepath           |            \~ 159 MB |     <br>\~ 1611 ms<br>\~ 1494 ms |     <br>\~ 1098 ms<br>\~ 1163 ms |
 | jlink-atomos-app:11_temurin            |            \~  79 MB |    \~ 1411 ms |    \~ 1436 ms |
 | jlink-atomos-compressed-app:11_temurin |            \~  57 MB |    \~ 1589 ms |    \~ 1556 ms |
 
@@ -713,7 +713,7 @@ The following tables show the results for the created image sizes and the averag
 
 | Deployment (OSGi Connect)              | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |                  ---:|           ---:|           ---:|
-| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 278 MB |     <br>\~ 1041 ms<br>\~ 1039 ms |     <br>\~ 1126 ms<br>\~ 1124 ms |
+| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 278 MB |     <br>\~ 1041 ms<br>\~ 1126 ms |     <br>\~ 1039 ms<br>\~ 1124 ms |
 | jlink-atomos-app:17_openj9            | \~ 166 MB  |    \~ 2492 ms |    \~ 2562 ms |
 | jlink-atomos-compressed-app:17_openj9 | \~ 143 MB  |    \~ 3309 ms |    \~ 2714 ms |
 
@@ -734,7 +734,7 @@ In this scenario the same images are used as in the IBM Semeru 17 scenario. Only
 
 | Deployment (OSGi Connect)              | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |                  ---:|           ---:|           ---:|
-| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 278 MB |     <br>\~ 1016 ms<br>\~ 1021 ms |     <br>\~ 1097 ms<br>\~ 1108 ms |
+| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 278 MB |     <br>\~ 1016 ms<br>\~ 1097 ms |     <br>\~ 1021 ms<br>\~ 1108 ms |
 | jlink-atomos-app:17_openj9            | \~ 166 MB  |    \~ 1603 ms |    \~ 1630 ms |
 | jlink-atomos-compressed-app:17_openj9 | \~ 143 MB  |    \~ 1714 ms |    \~ 1725 ms |
 
@@ -757,7 +757,7 @@ Also note that [class sharing is enabled by default](https://blog.openj9.org/201
 
 | Deployment (OSGi Connect)              | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |                  ---:|           ---:|           ---:|
-| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 302 MB |     <br>\~ 734 ms<br>\~ 750 ms |     <br>\~ 831 ms<br>\~ 801 ms |
+| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 302 MB |     <br>\~ 734 ms<br>\~ 831 ms |     <br>\~ 750 ms<br>\~ 801 ms |
 | jlink-atomos-app:17_openj9            | \~ 190 MB  |    \~ 1110 ms |    \~ 1180 ms |
 | jlink-atomos-compressed-app:17_openj9 | \~ 167 MB  |    \~ 1170 ms |    \~ 1224 ms |
 
