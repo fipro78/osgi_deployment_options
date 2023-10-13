@@ -9,6 +9,10 @@
   <groupId>org.fipro.osgi</groupId>
   <artifactId>benchmark.service</artifactId>
 
+  <properties>
+    <java.version>11</java.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.osgi</groupId>

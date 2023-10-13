@@ -411,24 +411,24 @@ The application variants created via the `org.fipro.service.app` project are put
 
 ### Base images
 
-When planning to containerize a Java application, the first decision to make is which base image to use. For this the base image size is taken as the leading criteria here. Other criterias can be security, additional required tooling, target infrastructure. The following tables only compare the image sizes:
+When planning to containerize a Java application, the first decision to make is which base image to use. For this the base image size is taken as the leading criteria here. Other criterias can be security, additional required tooling, target infrastructure. The following tables only compare the image sizes (values taken from images pulled on 2023/12/10):
 
 | Image                | Size     |
 | :---                 |      ---:|
-| alpine:3             |  5.54 MB |
-| debian:bullseye-slim | 80.50 MB |
-| ubuntu:jammy         | 77.84 MB |
+| alpine:3             |  7.33 MB |
+| debian:bullseye-slim | 80.55 MB |
+| ubuntu:jammy         | 77.82 MB |
 
 Related to Java the main difference between Alpine Linux and Debian/Ubuntu is the libc implementation. Alpine uses musl while Debian/Ubuntu are using glibc.
 
-| Image                | Size     |
-| :---                 |      ---:|
-| eclipse-temurin:17-jdk-jammy<br>(Ubuntu base image with JDK)  | ~ 455 MB |
-| eclipse-temurin:17-jdk-alpine<br>(Alpine base image with JDK) | ~ 356 MB |
-| eclipse-temurin:17-jre-jammy<br>(Ubuntu base image with JRE)  | ~ 266 MB |
-| eclipse-temurin:17-jre-alpine<br>(Alpine base image with JRE) | ~ 168 MB |
-| ibm-semeru-runtimes:open-17-jdk-jammy                         | ~ 477 MB |
-| ibm-semeru-runtimes:open-17-jre-jammy                         | ~ 272 MB |
+| Image                | Size (11)    | Size (17)    | Size (21)    |
+| :---                 |          ---:|          ---:|          ---:|
+| eclipse-temurin:xx-jdk-jammy<br>(Ubuntu base image with JDK)  | \~ 392 MB | \~ 407 MB | \~ 435 MB |
+| eclipse-temurin:xx-jdk-alpine<br>(Alpine base image with JDK) | \~ 290 MB | \~ 304 MB | \~ 332 MB |
+| eclipse-temurin:xx-jre-jammy<br>(Ubuntu base image with JRE)  | \~ 254 MB | \~ 269 MB | \~ 292 MB |
+| eclipse-temurin:xx-jre-alpine<br>(Alpine base image with JRE) | \~ 154 MB | \~ 167 MB | \~ 190 MB |
+| ibm-semeru-runtimes:open-xx-jdk-jammy                         | \~ 473 MB | \~ 482 MB | \~ xxx MB |
+| ibm-semeru-runtimes:open-xx-jre-jammy                         | \~ 274 MB | \~ 275 MB | \~ xxx MB |
 
 ### Interlude: Distroless
 
@@ -440,9 +440,13 @@ Distroless images are intended to create a smaller attack surface, reduce compli
 
 | Image                             |  Size     |
 | :---                              |       ---:|
-| [gcr.io/distroless/static-debian11](https://github.com/GoogleContainerTools/distroless/tree/main/base) |   2.36 MB |
-| [gcr.io/distroless/base-debian11](https://github.com/GoogleContainerTools/distroless/tree/main/base)   |  20.32 MB |
-| [gcr.io/distroless/java17-debian11](https://github.com/GoogleContainerTools/distroless/tree/main/java) | 230.88 MB |
+| [gcr.io/distroless/static-debian11](https://github.com/GoogleContainerTools/distroless/tree/main/base) |   2.45 MB |
+| [gcr.io/distroless/base-debian11](https://github.com/GoogleContainerTools/distroless/tree/main/base)   |  20.45 MB |
+| [gcr.io/distroless/java11-debian11](https://github.com/GoogleContainerTools/distroless/tree/main/java) | 209.12 MB |
+| [gcr.io/distroless/java17-debian11](https://github.com/GoogleContainerTools/distroless/tree/main/java) | 226.07 MB |
+| [gcr.io/distroless/static-debian12](https://github.com/GoogleContainerTools/distroless/tree/main/base) |   1.98 MB |
+| [gcr.io/distroless/base-debian12](https://github.com/GoogleContainerTools/distroless/tree/main/base)   |  20.68 MB |
+| [gcr.io/distroless/java17-debian12](https://github.com/GoogleContainerTools/distroless/tree/main/java) | 225.66 MB |
 
 Compared to an Alpine based Temurin JRE image, the Distroless Java image is bigger, as it is based on Debian with glibc. For production use Distroless images can still be relevant because of security reasons.
 
@@ -499,6 +503,7 @@ This will by default build the bundles, the application and create the different
 
 - temurin_11
 - temurin_17
+- temurin_21
 - graalvm_17
 - graalvm_21
 - graalvm_ce_17
@@ -596,7 +601,15 @@ By default the scripts are configured to execute the application start-stop proc
 The following example command will trigger a build that builds the Temurin 17 and the GraalVM 17 builds and then executes the benchmark with an iteration count of 5.
 
 ```
-mvn -Ddocker.keepRunning=true -Dbenchmark.iteration_count=5 clean verify -Ptemurin_17,graalvm_17
+mvn -Ddocker.keepRunning=true -Dbenchmark.iteration_count=5 clean verify -Pjava17,temurin_17,graalvm_17
+```
+
+```
+mvn -Ddocker.keepRunning=true -Dbenchmark.iteration_count=5 clean verify -Pjava11,temurin_11
+```
+
+```
+mvn -Ddocker.keepRunning=true -Dbenchmark.iteration_count=5 clean verify -Ptemurin_21,graalvm_21
 ```
 
 If you run into a timeout because you increased the `benchmark.iteration_count`, you can increase the wait timeout via the `container.timeout` property.
@@ -640,53 +653,69 @@ When starting a folder based Equinox application, by default the bundle cache is
 
 The following tables show the results for the created image sizes and the average time it took to start the application inside the container. Please note that these numbers are an average over 100 start-stop-cycles inside a container. So they are not 100% accurate and will show different numbers in detail in each test run. The measurement is only intended to show the basic implications of the different deployment options.
 
+### Eclipse Temurin 21
+
+| Deployment (plain OSGi)         | Benchmark Image Size | Startup clean | Startup cache |
+| :---                            |                  ---:|           ---:|           ---:|
+| folder-app:11_temurin           |            \~ 194 MB |    \~  920 ms |    \~ 1023 ms |
+| executable-app:11_temurin       |            \~ 195 MB |    \~ 1073 ms |    \~ 1112 ms |
+| jlink-app:11_temurin            |            \~  87 MB |    \~ 1315 ms |    \~ 1355 ms |
+| jlink-compressed-app:11_temurin |            \~  62 MB |    \~ 1455 ms |    \~ 1464 ms |
+
+
+| Deployment (OSGi Connect)       | Benchmark Image Size | Startup clean | Startup cache |
+| :---                            |                  ---:|           ---:|           ---:|
+| folder-atomos-app:11_temurin<br>classpath<br>modulepath           |            \~ 194 MB |     <br>\~ 1235 ms<br>\~  958 ms |     <br>\~ 1211 ms<br>\~ 944 ms |
+| jlink-atomos-app:11_temurin            |            \~  87 MB |    \~ 1293 ms |    \~ 1308 ms |
+| jlink-atomos-compressed-app:11_temurin |            \~  62 MB |    \~ 1441 ms |    \~ 1442 ms |
+
 ### Eclipse Temurin 17
 
 | Deployment (plain OSGi)         | Image Size | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |        ---:|                  ---:|           ---:|           ---:|
-| folder-app:17_temurin           | \~ 171 MB  |            \~ 173 MB |     \~ 982 ms |     \~ 901 ms |
-| executable-app:17_temurin       | \~ 174 MB  |            \~ 174 MB |    \~ 1087 ms |    \~ 1099 ms |
-| jlink-app:17_temurin            | \~  75 MB  |            \~  79 MB |    \~ 1336 ms |    \~ 1345 ms |
-| jlink-compressed-app:17_temurin | \~  53 MB  |            \~  56 MB |    \~ 1497 ms |    \~ 1505 ms |
+| folder-app:17_temurin           | \~ 169 MB  |            \~ 171 MB |     \~ 984 ms |    \~ 1019 ms |
+| executable-app:17_temurin       | \~ 170 MB  |            \~ 172 MB |    \~ 1086 ms |    \~ 1149 ms |
+| jlink-app:17_temurin            | \~  78 MB  |            \~  81 MB |    \~ 1425 ms |    \~ 1409 ms |
+| jlink-compressed-app:17_temurin | \~  56 MB  |            \~  58 MB |    \~ 1511 ms |    \~ 1489 ms |
 
 
 | Deployment (OSGi Connect)              | Image Size | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |        ---:|                  ---:|           ---:|           ---:|
-| folder-atomos-app:17_temurin<br>classpath<br>modulepath           | \~ 171 MB  |            \~ 173 MB |     <br>\~ 1122 ms<br>\~ 1194 ms |     <br>\~ 973 ms<br>\~ 1052 ms |
-| jlink-atomos-app:17_temurin            | \~  75 MB  |            \~  79 MB |    \~ 1439 ms |    \~ 1326 ms |
-| jlink-atomos-compressed-app:17_temurin | \~  53 MB  |            \~  56 MB |    \~ 1593 ms |    \~ 1445 ms |
+| folder-atomos-app:17_temurin<br>classpath<br>modulepath           | \~ 169 MB  |            \~ 171 MB |     <br>\~ 1479 ms<br>\~  960 ms |     <br>\~ 1450 ms<br>\~ 1072 ms |
+| jlink-atomos-app:17_temurin            | \~  78 MB  |            \~  81 MB |    \~ 1394 ms |    \~ 1350 ms |
+| jlink-atomos-compressed-app:17_temurin | \~  56 MB  |            \~  58 MB |    \~ 1526 ms |    \~ 1528 ms |
 
 ### Eclipse Temurin 11
 
 | Deployment (plain OSGi)         | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |                  ---:|           ---:|           ---:|
-| folder-app:17_temurin           |            \~ 161 MB |    \~ 1146 ms |     \~ 1077 ms |
-| executable-app:17_temurin       |            \~ 164 MB |    \~ 1229 ms |    \~ 1290 ms |
-| jlink-app:17_temurin            |            \~  76 MB |    \~ 1426 ms |    \~ 1417 ms |
-| jlink-compressed-app:17_temurin |            \~  54 MB |    \~ 1502 ms |    \~ 1541 ms |
+| folder-app:11_temurin           |            \~ 159 MB |    \~ 1136 ms |    \~ 1070 ms |
+| executable-app:11_temurin       |            \~ 160 MB |    \~ 1208 ms |    \~ 1187 ms |
+| jlink-app:11_temurin            |            \~  79 MB |    \~ 1387 ms |    \~ 1433 ms |
+| jlink-compressed-app:11_temurin |            \~  57 MB |    \~ 1589 ms |    \~ 1556 ms |
 
 
 | Deployment (OSGi Connect)       | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |                  ---:|           ---:|           ---:|
-| folder-atomos-app:17_temurin<br>classpath<br>modulepath           |            \~ 161 MB |     <br>\~ 1317 ms<br>\~ 1363 ms |     <br>\~ 1154 ms<br>\~ 1219 ms |
-| jlink-atomos-app:17_temurin            |            \~  76 MB |    \~ 1534 ms |    \~ 1408 ms |
-| jlink-atomos-compressed-app:17_temurin |            \~  54 MB |    \~ 1605 ms |    \~ 1504 ms |
+| folder-atomos-app:11_temurin<br>classpath<br>modulepath           |            \~ 159 MB |     <br>\~ 1611 ms<br>\~ 1098 ms |     <br>\~ 1494 ms<br>\~ 1163 ms |
+| jlink-atomos-app:11_temurin            |            \~  79 MB |    \~ 1411 ms |    \~ 1436 ms |
+| jlink-atomos-compressed-app:11_temurin |            \~  57 MB |    \~ 1589 ms |    \~ 1556 ms |
 
 ### IBM Semeru 17
 
 | Deployment (plain OSGi)        | Benchmark Image Size | Startup clean | Startup cache |
 | :---                           |                  ---:|           ---:|           ---:|
-| folder-app:17_openj9           |            \~ 276 MB |     \~ 998 ms |     \~ 875 ms |
-| executable-app:17_openj9       |            \~ 278 MB |    \~ 1067 ms |    \~ 1072 ms |
-| jlink-app:17_openj9            |            \~ 163 MB |    \~ 2445 ms |    \~ 2426 ms |
-| jlink-compressed-app:17_openj9 |            \~ 140 MB |    \~ 2600 ms |    \~ 2551 ms |
+| folder-app:17_openj9           |            \~ 278 MB |    \~ 1101 ms |    \~ 1017 ms |
+| executable-app:17_openj9       |            \~ 279 MB |    \~ 1288 ms |    \~ 1200 ms |
+| jlink-app:17_openj9            |            \~ 166 MB |    \~ 2591 ms |    \~ 2604 ms |
+| jlink-compressed-app:17_openj9 |            \~ 143 MB |    \~ 2748 ms |    \~ 2777 ms |
 
 
 | Deployment (OSGi Connect)              | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |                  ---:|           ---:|           ---:|
-| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 276 MB |     <br>\~ 944 ms<br>\~ 1023 ms |     <br>\~ 944 ms<br>\~ 1029 ms |
-| jlink-atomos-app:17_openj9            | \~ 163 MB  |    \~ 2330 ms |    \~ 2337 ms |
-| jlink-atomos-compressed-app:17_openj9 | \~ 140 MB  |    \~ 2463 ms |    \~ 2445 ms |
+| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 278 MB |     <br>\~ 1041 ms<br>\~ 1039 ms |     <br>\~ 1126 ms<br>\~ 1124 ms |
+| jlink-atomos-app:17_openj9            | \~ 166 MB  |    \~ 2492 ms |    \~ 2562 ms |
+| jlink-atomos-compressed-app:17_openj9 | \~ 143 MB  |    \~ 3309 ms |    \~ 2714 ms |
 
 __Note:__  
 After a discussion with some IBM experts at the EclipseCon Europe we discovered some options to improve the startup performance.
@@ -697,17 +726,17 @@ In this scenario the same images are used as in the IBM Semeru 17 scenario. Only
 
 | Deployment (plain OSGi)        | Benchmark Image Size | Startup clean | Startup cache |
 | :---                           |                  ---:|           ---:|           ---:|
-| folder-app:17_openj9           |            \~ 276 MB |     \~ 940 ms |     \~ 833 ms |
-| executable-app:17_openj9       |            \~ 278 MB |    \~ 1048 ms |    \~ 1046 ms |
-| jlink-app:17_openj9            |            \~ 163 MB |    \~ 1498 ms |    \~ 1483 ms |
-| jlink-compressed-app:17_openj9 |            \~ 140 MB |    \~ 1636 ms |    \~ 1636 ms |
+| folder-app:17_openj9           |            \~ 278 MB |    \~ 1052 ms |    \~ 1022 ms |
+| executable-app:17_openj9       |            \~ 279 MB |    \~ 1222 ms |    \~ 1198 ms |
+| jlink-app:17_openj9            |            \~ 166 MB |    \~ 1656 ms |    \~ 1645 ms |
+| jlink-compressed-app:17_openj9 |            \~ 143 MB |    \~ 1777 ms |    \~ 1794 ms |
 
 
 | Deployment (OSGi Connect)              | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |                  ---:|           ---:|           ---:|
-| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 276 MB |     <br>\~ 912 ms<br>\~ 981 ms |     <br>\~ 917 ms<br>\~ 980 ms |
-| jlink-atomos-app:17_openj9            | \~ 163 MB  |    \~ 1458 ms |    \~ 1464 ms |
-| jlink-atomos-compressed-app:17_openj9 | \~ 140 MB  |    \~ 1615 ms |    \~ 1610 ms |
+| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 278 MB |     <br>\~ 1016 ms<br>\~ 1021 ms |     <br>\~ 1097 ms<br>\~ 1108 ms |
+| jlink-atomos-app:17_openj9            | \~ 166 MB  |    \~ 1603 ms |    \~ 1630 ms |
+| jlink-atomos-compressed-app:17_openj9 | \~ 143 MB  |    \~ 1714 ms |    \~ 1725 ms |
 
 ### IBM Semeru 17 - -Xshareclasses
 
@@ -720,17 +749,17 @@ Also note that [class sharing is enabled by default](https://blog.openj9.org/201
 
 | Deployment (plain OSGi)        | Benchmark Image Size | Startup clean | Startup cache |
 | :---                           |                  ---:|           ---:|           ---:|
-| folder-app:17_openj9           |            \~ 296 MB |     \~ 621 ms |     \~ 555 ms |
-| executable-app:17_openj9       |            \~ 298 MB |    \~  913 ms |    \~  914 ms |
-| jlink-app:17_openj9            |            \~ 187 MB |    \~  974 ms |    \~  971 ms |
-| jlink-compressed-app:17_openj9 |            \~ 164 MB |    \~ 1057 ms |    \~ 1036 ms |
+| folder-app:17_openj9           |            \~ 299 MB |    \~  721 ms |    \~  641 ms |
+| executable-app:17_openj9       |            \~ 301 MB |    \~ 1004 ms |    \~ 1010 ms |
+| jlink-app:17_openj9            |            \~ 189 MB |    \~ 1083 ms |    \~ 1098 ms |
+| jlink-compressed-app:17_openj9 |            \~ 166 MB |    \~ 1177 ms |    \~ 1200 ms |
 
 
 | Deployment (OSGi Connect)              | Benchmark Image Size | Startup clean | Startup cache |
 | :---                            |                  ---:|           ---:|           ---:|
-| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 296 MB |     <br>\~ 657 ms<br>\~ 719 ms |     <br>\~ 669 ms<br>\~ 719 ms |
-| jlink-atomos-app:17_openj9            | \~ 188 MB  |    \~ 1011 ms |    \~ 1017 ms |
-| jlink-atomos-compressed-app:17_openj9 | \~ 165 MB  |    \~ 1050 ms |    \~ 1126 ms |
+| folder-atomos-app:17_openj9<br>classpath<br>modulepath           |            \~ 302 MB |     <br>\~ 734 ms<br>\~ 750 ms |     <br>\~ 831 ms<br>\~ 801 ms |
+| jlink-atomos-app:17_openj9            | \~ 190 MB  |    \~ 1110 ms |    \~ 1180 ms |
+| jlink-atomos-compressed-app:17_openj9 | \~ 167 MB  |    \~ 1170 ms |    \~ 1224 ms |
 
 Compared to the images without the shared class cache the size of the containers is about 20 - 25 MB bigger.
 
