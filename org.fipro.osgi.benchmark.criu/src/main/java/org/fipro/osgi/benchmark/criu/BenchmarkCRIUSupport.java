@@ -15,21 +15,29 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 @Component
-public class BenchmarkCRUISupport {
+public class BenchmarkCRIUSupport {
 
     @Activate
     void activate() {
         try {
             String containerInit = System.getProperty("container.init");
             if (Boolean.valueOf(containerInit)) {
-                // TODO create the checkpoint
+                // create the checkpoint
                 if (CRIUSupport.isCRIUSupportEnabled()) {
+
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+
                     new CRIUSupport(Paths.get("checkpointData"))
                             .setLeaveRunning(false)
                             .setShellJob(true)
                             .setFileLocks(true)
                             .setLogLevel(4)
                             .setLogFile("logs")
+                            .setUnprivileged(true)
                             .checkpointJVM();
                 } else {
                     System.err.println("CRIU is not enabled: " + CRIUSupport.getErrorMessage());
