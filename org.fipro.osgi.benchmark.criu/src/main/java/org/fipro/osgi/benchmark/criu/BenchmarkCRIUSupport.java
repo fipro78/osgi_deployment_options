@@ -38,6 +38,7 @@ public class BenchmarkCRIUSupport {
                             .setLogLevel(4)
                             .setLogFile("logs")
                             .setUnprivileged(true)
+                            .setTCPEstablished(true)
                             .checkpointJVM();
                 } else {
                     System.err.println("CRIU is not enabled: " + CRIUSupport.getErrorMessage());
