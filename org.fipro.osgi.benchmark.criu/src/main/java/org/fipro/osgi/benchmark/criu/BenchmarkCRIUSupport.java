@@ -43,9 +43,6 @@ public class BenchmarkCRIUSupport {
                 } else {
                     System.err.println("CRIU is not enabled: " + CRIUSupport.getErrorMessage());
                 }
-
-                // perform a graceful shutdown to get the bundle cache created correctly
-                System.exit(0);
             }
 
             long current = System.currentTimeMillis();
