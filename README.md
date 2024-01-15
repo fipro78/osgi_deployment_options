@@ -861,16 +861,76 @@ CRIU support in OpenJ9 is prebuilt in IBM Semeru containers. Open Liberty uses t
 
 Enable the CRIU support in OpenJ9 via the ```-XX:+EnableCRIUSupport``` parameter.
 
-Create checkpoint data via ```org.eclipse.openj9.criu.CRIUSupport``` API
+To create a checkpoint you need to use the ```org.eclipse.openj9.criu.CRIUSupport``` API. In this example the checkpoint creation is done in the [BenchmarkCRIUSupport](/org.fipro.osgi.benchmark.criu/src/main/java/org/fipro/osgi/benchmark/criu/BenchmarkCRIUSupport) immediate component.
 
-Current state July 2023:
+To create a container with checkpoint data, a three step process is needed.
+ - Create an image with the application
+  - Start the container to create the checkpoint
+  - Create a new image from the base one with checkpoint data and a changed CMD to start the application via `criu restore` 
+  
+  To execute the process more easily, the shell script [build_criu_image_docker.sh](/org.fipro.service.app.criu/src/main/resources/build_criu_image_docker.sh) is used. Note the use of special Linux capabilities and the disabling of the default security profile on starting the container for checkpoint creation.
+
+CRIU needs the original PID and TID when it restores a checkpointed process. To ensure that the PID is available in a container, we invoke a dummy command 1000 times so the Java process can start with PID/TIDs >1000, which on restore are very likely to be free. Thanks [Younes Manton](https://github.com/ymanton) for this and many other hints via this [GitHub Issue](https://github.com/eclipse-openj9/openj9/issues/18229)!
+
+Starting a checkpointed Java process is done by directly calling the `criu` command:
+
+```
+criu restore --unprivileged -D /app/checkpointData --shell-job -v4 --log-file=restore.log
+```
+
+To start the container with the application which is restored from checkpoint, you also need to use the necessary Linux capabilities and disable the default security profile. The start for the container of this example can be done via the [start_container_docker.sh](/org.fipro.service.app.criu/src/main/resources/start_container_docker.sh) script.
+
+__Note:__  
+With Podman the disabling of the default security profile is not necessary, but the Podman commands need to be executed in a rootful container or all podman commands need to be executed as root via `sudo`.
+
+On trying to restore the Java process from checkpoint multiple times for the benchmark, I noticed that only the first restore operation succeeds. Further restore operations after the first on stopped fail. The reasons where on the one hand the changed `stdout` and `stderr` files created to handle the std out/err/in to terminals in unprivileged mode. On the other hand there where issues with missing temporary files I haven't digged deeper into. Could be caused by the OSGi runtime as additional bundles for the benchmark request processing are loaded.
+
+Instead of starting the process in the same container multiple times, the container itself is created and started multiple times. The benchmark execution of the criu containers is therefore not done via the Maven Docker Plugin. It is done via the [start_benchmark_docker.sh](/org.fipro.osgi.benchmark.app/start_benchmark_docker.sh) script which is triggered in the Maven build via the [exec-maven-plugin](https://www.mojohaus.org/exec-maven-plugin/).  
+To use Podman instead of Docker, adjust the value of the property `benchmark.container.engine` in the [pom.xml](/org.fipro.osgi.benchmark.app/pom.xml) of the `org.fipro.osgi.benchmark.app` project.
+
+To start the build for creating the container images and starting the benchmark, execute the following command:
+
+```
+mvn -Ddocker.keepRunning=true -Dbenchmark.iteration_count=10 clean verify -Pcriu
+```
+
+| Deployment      | Base Image Size<br>(ibm-semeru-runtimes:open-17-jre-ubi9) | App Image Size<br>w/o checkpoint data  | App Image Size<br>w/ checkpoint data | Startup Time |
+| :---            |                 :---:|          ---:|          ---:| ---:|
+| folder-criu     |            \~ 431 MB |    \~ 433 MB |    \~ 470 MB | \~ 169 ms|
+| executable-criu |            \~ 431 MB |    \~ 436 MB |    \~ 477 MB | \~ 150 ms|
+
+__Note:__  
+The `folder-criu` example contains cache data, while the `executable-criu` by default starts clean, which explains the size difference.
+
+I received very helpful and friendly support via [GitHub Issue](https://github.com/eclipse-openj9/openj9/issues/18229) to get this example working with OpenJ9 CRIU support. The comments contain a lot of interesing detail information.
+
+Current limitations of this example:
+- The restore process can only be triggered once and not in a loop inside the container. The reason seems to be that temporary files get generated and are not available on consecutive calls.
+- It is not possible to change environment variables and pass new parameters to be effective in the restored application.
+- The handling of the console to get a connection via telnet is not trivial and causes sometimes issues, e.g. if a restored process writes to the console, a consecutive restore operation fails because the output file has changed.
+
+Current state/limitations of OpenJ9 CRIU January 2024:
 - Only Linux, no Alpine as IBM Semeru containers are not available for Alpine
 - Not clear if building a custom JRE with jlink is possible
 - Checkpoint creation is only possible via API, not via shell command
+- Special capabilities and disabling the default security profile is needed in order to create a checkpoint and restore from it
+- The creation of the image is mainly a three step process:
+  - Create an image with the application
+  - Start the container to create the checkpoint
+  - Create a new image from the base one with checkpoint data and a changed CMD to start the application via `criu restore` 
 
 Further information:
+- [GitHub Issue](https://github.com/eclipse-openj9/openj9/issues/18229)
 - [OpenJ9 CRIU support](https://eclipse.dev/openj9/docs/criusupport/)
-- [Instant On Java Cloud Applications with Checkpoint and Restore](https://www.youtube.com/watch?v=E_5MgOYnEpY)
+- [Fast JVM startup with OpenJ9 CRIU Support](https://blog.openj9.org/2022/09/26/fast-jvm-startup-with-openj9-criu-support/)
+- [Getting started with OpenJ9 CRIU Support](https://blog.openj9.org/2022/09/26/getting-started-with-openj9-criu-support/)
+- [Unprivileged OpenJ9 CRIU Support](https://blog.openj9.org/2022/09/29/unprivileged-openj9-criu-support/)
+- [OpenJ9 CRIU Support: A look under the hood](https://blog.openj9.org/2022/10/14/openj9-criu-support-a-look-under-the-hood/)
+- [OpenJ9 CRIU Support: A look under the hood (part II)](https://blog.openj9.org/2022/10/14/openj9-criu-support-a-look-under-the-hood-part-ii/)
+- [How We Developed the Eclipse OpenJ9 CRIU Support for Fast Java Startup](https://foojay.io/today/how-we-developed-the-eclipse-openj9-criu-support-for-fast-java-startup/)
 - [Liberty InstantOn startup for cloud native Java applications](https://openliberty.io/blog/2022/09/29/instant-on-beta.html)
+- [How to package your cloud-native Java application for rapid startup](https://openliberty.io/blog/2023/06/29/rapid-startup-instanton.html)
+- [How to containerize your Spring Boot application for rapid startup](https://openliberty.io/blog/2023/09/26/spring-boot-3-instant-on.html)
 - [Faster startup for containerized applications with Open Liberty InstantOn](https://openliberty.io/docs/latest/instanton.html)
+- [Instant On Java Cloud Applications with Checkpoint and Restore](https://www.youtube.com/watch?v=E_5MgOYnEpY)
 

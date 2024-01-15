@@ -1510,5 +1510,9 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>criu</id>
+      <!-- the app for criu docker images is located in org.fipro.service.app.criu so we have nothing to do here-->
+    </profile>
   </profiles>
 </project>

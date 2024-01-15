@@ -1,8 +1,10 @@
 package org.fipro.osgi.benchmark;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -30,7 +32,8 @@ public class StartupTimestamp {
 			String executionid = System.getProperty("benchmark.executionid");
 			String start = System.getProperty("benchmark.starttime");
 			
-			String serviceHost = System.getProperty("benchmark.host", "localhost");
+			String serviceHost = System.getenv("BENCHMARK_SERVICE_HOST");
+			serviceHost = System.getProperty("benchmark.host", serviceHost != null ? serviceHost : "localhost");
 			
 			if (appid != null && executionid != null && start != null) {
 				HttpClient httpClient = HttpClient.newBuilder()
@@ -39,7 +42,7 @@ public class StartupTimestamp {
 						.build();
 				
 				HttpRequest request = HttpRequest
-				  .newBuilder(URI.create("http://" + serviceHost + ":8080/benchmark/registerstartup/"))
+				  .newBuilder(URI.create("http://" + resolveHostname(serviceHost) + ":8080/benchmark/registerstartup/"))
 				  .POST(HttpRequest.BodyPublishers.ofString(buildFormDataString(appid, executionid, start, "" + current)))
 				  .build();
 				
@@ -58,6 +61,18 @@ public class StartupTimestamp {
 		}
 	}
 	
+    private String resolveHostname(String hostname) {
+		InetAddress benchmarkServiceAddress;
+		try {
+			benchmarkServiceAddress = InetAddress.getByName(hostname);
+		} catch (UnknownHostException e) {
+			// fallback to localhost if the configured hostname is not available
+			// only needed for local testing scenarios, probably not a good design for production cases
+			throw new IllegalStateException("Address of benchmark service server can not be resolved", e);
+		}
+		return benchmarkServiceAddress.getHostAddress();
+	}
+
 	private String buildFormDataString(String appid, String executionid, String start, String end) {
         var builder = new StringBuilder();
 

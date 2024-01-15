@@ -655,7 +655,10 @@ Bundle-SymbolicName: ${project.groupId}.${project.artifactId}
         <module>org.fipro.service.command</module>
         <module>org.fipro.osgi.benchmark</module>
         <module>org.fipro.service.app</module>
-        <!-- <module>native-app</module> -->
+        <!-- build the criu modules -->
+        <module>org.fipro.osgi.benchmark.criu</module>
+        <module>org.fipro.service.app.criu</module>
+        <!-- build the benchmark app at the end to ensure the application is build first-->
         <module>org.fipro.osgi.benchmark.service</module>
         <module>org.fipro.osgi.benchmark.app</module>
       </modules>

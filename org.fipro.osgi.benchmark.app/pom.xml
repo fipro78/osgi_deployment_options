@@ -10,9 +10,11 @@
   <artifactId>benchmark.app</artifactId>
 
   <properties>
+    <benchmark.alias>benchmark_service</benchmark.alias>
     <benchmark.port>8080</benchmark.port>
     <container.timeout>200000</container.timeout>
     <benchmark.iteration_count>10</benchmark.iteration_count>
+    <benchmark.container.engine>docker</benchmark.container.engine>
   </properties>
 
   <dependencies>
@@ -270,10 +272,11 @@
         <artifactId>docker-maven-plugin</artifactId>
         <extensions>true</extensions>
         <configuration>
+          <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
           <images>
             <image>
               <name>osgi-benchmark-app:17_temurin</name>
-              <alias>benchmark_service</alias>
+              <alias>${benchmark.alias}</alias>
 
               <build>
                 <dockerFile>${project.basedir}/src/main/docker/Dockerfile</dockerFile>
@@ -284,12 +287,16 @@
               </build>
 
               <run>
+                <network>
+                  <mode>custom</mode>
+                  <name>benchmark_network</name>
+                </network>
                 <ports>
                   <port>benchmark.port:8080</port>
                 </ports>
                 <wait>
                   <http>
-                    <url>http://localhost:${benchmark.port}/benchmark/details</url>
+                    <url>http://127.0.0.1:${benchmark.port}/benchmark/details</url>
                   </http>
                   <time>10000</time>
                 </wait>
@@ -338,7 +345,7 @@
             <configuration>
               <!-- stop all benchmark containers created by a previous run with -Ddocker.keepRunning=true -->
               <stopNamePattern>benchmark_**</stopNamePattern>
-              <!-- override the image configuration to avoid that the benchmark_service container is started again -->
+              <!-- override the image configuration to avoid that the ${benchmark.alias} container is started again -->
               <images combine.self="override">
               </images>
             </configuration>
@@ -373,13 +380,14 @@
                   
                   <run>
                     <dependsOn>
-                      <container>benchmark_service</container>
+                      <container>${benchmark.alias}</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA21</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -399,10 +407,11 @@
                       <container>benchmark_folder_21</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA21</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -422,10 +431,11 @@
                       <container>benchmark_executable_21</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA21</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -445,10 +455,11 @@
                       <container>benchmark_jlink_21</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA21</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -468,10 +479,11 @@
                       <container>benchmark_jlink_compressed_21</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA21</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -491,10 +503,11 @@
                       <container>benchmark_folder_atomos_21</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA21</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -514,10 +527,11 @@
                       <container>benchmark_jlink_atomos_21</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA21</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -555,13 +569,14 @@
                   
                   <run>
                     <dependsOn>
-                      <container>benchmark_service</container>
+                      <container>${benchmark.alias}</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
                     <cmd>./start_benchmark.sh</cmd>
@@ -580,10 +595,11 @@
                       <container>benchmark_folder_17</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
                     <cmd>./start_benchmark.sh</cmd>
@@ -602,10 +618,11 @@
                       <container>benchmark_executable_17</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
                     <cmd>/app/bin/start_benchmark.sh</cmd>
@@ -624,10 +641,11 @@
                       <container>benchmark_jlink_17</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
                     <cmd>/app/bin/start_benchmark.sh</cmd>
@@ -646,10 +664,11 @@
                       <container>benchmark_jlink_compressed_17</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
                     <cmd>./start_benchmark.sh</cmd>
@@ -668,10 +687,11 @@
                       <container>benchmark_folder_atomos_17</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
                     <cmd>/app/bin/start_benchmark.sh</cmd>
@@ -690,10 +710,11 @@
                       <container>benchmark_jlink_atomos_17</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
                     <cmd>/app/bin/start_benchmark.sh</cmd>
@@ -727,13 +748,14 @@
                   
                   <run>
                     <dependsOn>
-                      <container>benchmark_service</container>
+                      <container>${benchmark.alias}</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA11</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -753,10 +775,11 @@
                       <container>benchmark_folder_11</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA11</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -776,10 +799,11 @@
                       <container>benchmark_executable_11</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA11</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -799,10 +823,11 @@
                       <container>benchmark_jlink_11</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA11</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -822,10 +847,11 @@
                       <container>benchmark_jlink_compressed_11</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA11</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -845,10 +871,11 @@
                       <container>benchmark_folder_atomos_11</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA11</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -868,10 +895,11 @@
                       <container>benchmark_jlink_atomos_11</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_JAVA11</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -906,13 +934,14 @@
                   
                   <run>
                     <dependsOn>
-                      <container>benchmark_service</container>
+                      <container>${benchmark.alias}</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_17</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -945,13 +974,14 @@
                   
                   <run>
                     <dependsOn>
-                      <container>benchmark_service</container>
+                      <container>${benchmark.alias}</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_21</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -984,13 +1014,14 @@
                   
                   <run>
                     <dependsOn>
-                      <container>benchmark_service</container>
+                      <container>${benchmark.alias}</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_CE_17</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1023,13 +1054,14 @@
                   
                   <run>
                     <dependsOn>
-                      <container>benchmark_service</container>
+                      <container>${benchmark.alias}</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_CE_21</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1064,13 +1096,14 @@
                   
                   <run>
                     <dependsOn>
-                      <container>benchmark_service</container>
+                      <container>${benchmark.alias}</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1090,10 +1123,11 @@
                       <container>benchmark_folder_17_openj9</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1113,10 +1147,11 @@
                       <container>benchmark_executable_17_openj9</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1136,10 +1171,11 @@
                       <container>benchmark_jlink_17_openj9</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1159,10 +1195,11 @@
                       <container>benchmark_jlink_compressed_17_openj9</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1182,10 +1219,11 @@
                       <container>benchmark_folder_atomos_17_openj9</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1205,10 +1243,11 @@
                       <container>benchmark_jlink_atomos_17_openj9</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1232,10 +1271,11 @@
                       <container>benchmark_jlink_atomos_compressed_17_openj9</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_QUICKSTART</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                       <JAVA_OPTS_EXTRA>-Xquickstart</JAVA_OPTS_EXTRA>
@@ -1256,10 +1296,11 @@
                       <container>benchmark_folder_17_openj9_quickstart</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_QUICKSTART</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                       <JAVA_OPTS_EXTRA>-Xquickstart</JAVA_OPTS_EXTRA>
@@ -1280,10 +1321,11 @@
                       <container>benchmark_executable_17_openj9_quickstart</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_QUICKSTART</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                       <JAVA_OPTS_EXTRA>-Xquickstart</JAVA_OPTS_EXTRA>
@@ -1304,10 +1346,11 @@
                       <container>benchmark_jlink_17_openj9_quickstart</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_QUICKSTART</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                       <JAVA_OPTS_EXTRA>-Xquickstart</JAVA_OPTS_EXTRA>
@@ -1328,10 +1371,11 @@
                       <container>benchmark_jlink_compressed_17_openj9_quickstart</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_QUICKSTART</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                       <JAVA_OPTS_EXTRA>-Xquickstart</JAVA_OPTS_EXTRA>
@@ -1352,10 +1396,11 @@
                       <container>benchmark_folder_atomos_17_openj9_quickstart</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_QUICKSTART</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                       <JAVA_OPTS_EXTRA>-Xquickstart</JAVA_OPTS_EXTRA>
@@ -1376,10 +1421,11 @@
                       <container>benchmark_jlink_atomos_17_openj9_quickstart</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_QUICKSTART</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                       <JAVA_OPTS_EXTRA>-Xquickstart</JAVA_OPTS_EXTRA>
@@ -1404,10 +1450,11 @@
                       <container>benchmark_jlink_atomos_compressed_17_openj9_quickstart</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_SCC</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1427,10 +1474,11 @@
                       <container>benchmark_folder_17_openj9_scc</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_SCC</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1450,10 +1498,11 @@
                       <container>benchmark_executable_17_openj9_scc</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_SCC</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1473,10 +1522,11 @@
                       <container>benchmark_jlink_17_openj9_scc</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_SCC</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1496,10 +1546,11 @@
                       <container>benchmark_jlink_compressed_17_openj9_scc</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_SCC</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1519,10 +1570,11 @@
                       <container>benchmark_folder_atomos_17_openj9_scc</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_SCC</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1542,10 +1594,11 @@
                       <container>benchmark_jlink_atomos_17_openj9_scc</container>
                     </dependsOn>
                     <network>
-                      <mode>container</mode>
-                      <name>benchmark_service</name>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
                     </network>
                     <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
                       <BENCHMARK_SUFFIX>_OPENJ9_SCC</BENCHMARK_SUFFIX>
                       <ITERATION_COUNT>${benchmark.iteration_count}</ITERATION_COUNT>
                     </env>
@@ -1562,6 +1615,133 @@
               </images>
             </configuration>
           </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>criu</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.1.1</version>
+            <executions>
+              <execution>
+                <id>run_executable_criu_container</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>bash</executable>
+                  <workingDirectory>${project.basedir}</workingDirectory>
+                  <commandlineArgs>start_benchmark_${benchmark.container.engine}.sh -executable ${benchmark.iteration_count} skip_benchmark_service</commandlineArgs>
+                </configuration>
+              </execution>
+              <execution>
+                <id>run_folder_based_criu_container</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>bash</executable>
+                  <workingDirectory>${project.basedir}</workingDirectory>
+                  <commandlineArgs>start_benchmark_${benchmark.container.engine}.sh -folder ${benchmark.iteration_count} skip_benchmark_service</commandlineArgs>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- 
+            Starting the containers for benchmarking only works with a single iteration inside the container.
+            Trying to start the application via restore multiple times fails because of changed or new files from the previous call.
+           -->
+          <!--
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+              <images combine.children="append">
+                <image>
+                  <name>osgi-deployment-folder-criu:latest</name>
+                  <alias>benchmark_criu_folder</alias>
+                  
+                  <run>
+                    <log><color>cyan</color></log>
+                    <dependsOn>
+                      <container>${benchmark.alias}</container>
+                    </dependsOn>
+                    <network>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
+                    </network>
+                    <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
+                      <BENCHMARK_SUFFIX>_OPENJ9_CRIU</BENCHMARK_SUFFIX>
+                      <ITERATION_COUNT>1</ITERATION_COUNT>
+                    </env>
+                    <capDrop>
+                      <drop>ALL</drop>
+                    </capDrop>
+                    <capAdd>
+                      <add>CHECKPOINT_RESTORE</add>
+                      <add>SYS_PTRACE</add>
+                      <add>SETPCAP</add>
+                    </capAdd>
+                    <securityOpts>
+                      <opt>seccomp=unconfined</opt>
+                    </securityOpts>
+                    <cmd>./start_benchmark.sh</cmd>
+                    <wait>
+                      <time>${container.timeout}</time>
+                      <exit>0</exit>
+                    </wait>
+                  </run>
+                </image>
+                <image>
+                  <name>osgi-deployment-executable-criu:latest</name>
+                  <alias>benchmark_criu_executable</alias>
+                  
+                  <run>
+                    <log><color>cyan</color></log>
+                    <dependsOn>
+                      <container>benchmark_criu_folder</container>
+                    </dependsOn>
+                    <network>
+                      <mode>custom</mode>
+                      <name>benchmark_network</name>
+                    </network>
+                    <env>
+                      <BENCHMARK_SERVICE_HOST>${benchmark.alias}</BENCHMARK_SERVICE_HOST>
+                      <BENCHMARK_SUFFIX>_OPENJ9_CRIU</BENCHMARK_SUFFIX>
+                      <ITERATION_COUNT>1</ITERATION_COUNT>
+                    </env>
+                    <capDrop>
+                      <drop>ALL</drop>
+                    </capDrop>
+                    <capAdd>
+                      <add>CHECKPOINT_RESTORE</add>
+                      <add>SYS_PTRACE</add>
+                      <add>SETPCAP</add>
+                    </capAdd>
+                    <securityOpts>
+                      <opt>seccomp=unconfined</opt>
+                    </securityOpts>
+                    <cmd>./start_benchmark.sh</cmd>
+                    <wait>
+                      <time>${container.timeout}</time>
+                      <exit>0</exit>
+                    </wait>
+                  </run>
+                </image>
+              </images>
+            </configuration>
+          </plugin>
+          -->
         </plugins>
       </build>
     </profile>

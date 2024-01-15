@@ -142,7 +142,6 @@
         <configuration>
           <bndruns>
             <bndrun>equinox-app.bndrun</bndrun>
-            <bndrun>atomos-equinox-app.bndrun</bndrun>
           </bndruns>
         </configuration>
       </plugin>
@@ -153,7 +152,6 @@
         <configuration>
           <bndruns>
             <bndrun>equinox-app.bndrun</bndrun>
-            <bndrun>atomos-equinox-app.bndrun</bndrun>
           </bndruns>
         </configuration>
       </plugin>
@@ -200,6 +198,18 @@
                   <excludes>
                     <exclude>**/*.bat</exclude>
                   </excludes>
+                </resource>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <includes>
+                    <include>build_*.*</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>src/main/docker/folder_based</directory>
+                  <includes>
+                    <include>Dockerfile</include>
+                  </includes>
                 </resource>
               </resources>
             </configuration>
@@ -292,6 +302,18 @@
                 <resource>
                   <directory>src/main/resources/equinox_executable</directory>
                 </resource>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <includes>
+                    <include>build_*.*</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>src/main/docker/executable</directory>
+                  <includes>
+                    <include>Dockerfile</include>
+                  </includes>
+                </resource>
               </resources>
             </configuration>
           </execution>
@@ -310,222 +332,38 @@
               </resources>
             </configuration>
           </execution>
-
-          <!-- copy executable jar in jlink docker build context folder -->
-          <execution>
-            <id>copy-executable-jlink</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/jlink</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}</directory>
-                  <includes>
-                    <include>equinox-app.jar</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-executable-jlink-scripts</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/jlink</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources/equinox_jlink</directory>
-                  <includes>
-                    <include>**/*.sh</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-executable-jlink-etc</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/jlink/etc</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources/etc</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-
-          <!-- copy configuration and applications jars for Atomos folder distribution -->
-          <execution>
-            <id>copy-configuration-atomos</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/folder_based_atomos</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources/equinox_folder_atomos</directory>
-                  <excludes>
-                    <exclude>**/*.bat</exclude>
-                  </excludes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-plugins-atomos</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/folder_based_atomos/app/bundles</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}/deps</directory>
-                  <excludes>
-                    <exclude>org.osgi.namespace.implementation-1.0.0.jar</exclude>
-                    <exclude>org.osgi.service.cm-*.jar</exclude>
-                    <exclude>osgi.annotation-*.jar</exclude>
-                  </excludes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-etc-atomos</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/folder_based_atomos/app/etc</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources/etc</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-
-          <!-- copy executable atomos jar and configuration in docker build context folder for jlink -->
-          <execution>
-            <id>copy-executable-jlink-atomos</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/jlink_atomos</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}</directory>
-                  <includes>
-                    <include>atomos-equinox-app.jar</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-executable-jlink-atomos-scripts</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/jlink_atomos</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources/equinox_jlink</directory>
-                  <includes>
-                    <include>**/*.sh</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-executable-jlink-atomos-etc</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deployment/jlink_atomos/etc</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources/etc</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
       
       <!-- build docker images -->
       <plugin>
-        <groupId>io.fabric8</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <images combine.children="append">
-		  <!--
-			<image>
-			  <name>osgi-deployment-folder-%a:17_openj9_criu</name>
-			  <alias>folder_based_17_openj9_criu</alias>
-			  <build>
-				<dockerFile>${project.basedir}/src/main/docker/executable_criu/Dockerfile</dockerFile>
-				<contextDir>${project.build.directory}/deployment/folder_based</contextDir>
-				<args>
-				  <IMAGE_NAME>ibm-semeru-runtimes</IMAGE_NAME>
-				  <VERSION>open-17-jre-jammy</VERSION>
-				  <JAVA_OPTS_EXTRA>-Xshareclasses:name=app_cache,cacheDir=/app/.scc</JAVA_OPTS_EXTRA>
-				</args>
-			  </build>
-			</image>
-			-->
-            <image>
-              <name>osgi-deployment-executable-%a:17_openj9_criu</name>
-              <alias>executable_17_openj9_criu</alias>
-              <build>
-                <dockerFile>${project.basedir}/src/main/docker/executable_debian/Dockerfile</dockerFile>
-                <contextDir>${project.build.directory}/deployment/executable</contextDir>
-                <args>
-                  <IMAGE_NAME>icr.io/appcafe/ibm-semeru-runtimes</IMAGE_NAME>
-                  <VERSION>open-17-jre-ubi9</VERSION>
-                  <EXECUTABLE_JAR>equinox-app.jar</EXECUTABLE_JAR>
-                  <JAVA_OPTS_EXTRA>-XX:+EnableCRIUSupport</JAVA_OPTS_EXTRA>
-                </args>
-              </build>
-            </image>
-          </images>
-          <!-- use the image alias as container name on start -->
-          <containerNamePattern>%a</containerNamePattern>
-        </configuration>
-
-        <!-- Connect start/stop to pre- and
-         post-integration-test phase, respectively if you want to start
-         your docker containers during integration tests -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.1</version>
         <executions>
           <execution>
-            <id>start</id>
-            <phase>pre-integration-test</phase>
+            <id>build_executable_criu_container</id>
+            <phase>package</phase>
             <goals>
-              <!-- "build" is used to create the images with the artifact -->
-              <goal>build</goal>
+              <goal>exec</goal>
             </goals>
+            <configuration>
+              <executable>bash</executable>
+              <workingDirectory>${project.build.directory}/deployment/executable</workingDirectory>
+              <commandlineArgs>build_criu_image_docker.sh -executable</commandlineArgs>
+            </configuration>
+          </execution>
+          <execution>
+            <id>build_folder_based_criu_container</id>
+            <phase>package</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>bash</executable>
+              <workingDirectory>${project.build.directory}/deployment/folder_based</workingDirectory>
+              <commandlineArgs>build_criu_image_docker.sh -folder</commandlineArgs>
+            </configuration>
           </execution>
         </executions>
       </plugin>
